@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Registration · White & Blue</title>
+  <!-- Font Awesome 6 (free) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(145deg, #e9f2fc 0%, #ffffff 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      margin: 0;
+      position: relative;
+    }
+
+    /* ----- TOP BAR with logo (left) and MAIN button (right) ----- */
+    .top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 3rem;
+      background: transparent;
+      z-index: 10;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.6);
+      backdrop-filter: blur(4px);
+      padding: 0.5rem 1.5rem;
+      border-radius: 60px;
+      box-shadow: 0 4px 12px rgba(0,40,80,0.1);
+      border: 1px solid white;
+    }
+
+    .logo-area img {
+      height: 40px;
+      width: auto;
+      display: block;
+    }
+
+    .logo-area span {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #0b3d5c;
+    }
+
+    .main-btn {
+      background: white;
+      border: 1px solid #c5dfff;
+      color: #1d6eb0;
+      padding: 0.6rem 1.8rem;
+      border-radius: 40px;
+      font-size: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      box-shadow: 0 4px 10px rgba(0,60,130,0.1);
+    }
+
+    .main-btn:hover {
+      background: #e3f0ff;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(0,90,180,0.15);
+    }
+
+    .main-btn i {
+      font-size: 1rem;
+    }
+
+    /* elegant card container — wider for side by side */
+    .form-card {
+      max-width: 980px;
+      width: 100%;
+      background-color: #ffffff;
+      border-radius: 32px;
+      box-shadow: 0 20px 40px -10px rgba(0, 79, 158, 0.25), 0 8px 20px -6px rgba(0, 53, 102, 0.15);
+      overflow: hidden;
+      backdrop-filter: blur(2px);
+      transition: transform 0.25s ease;
+      margin-top: 80px; /* space for fixed top bar */
+    }
+
+    .form-card:hover {
+      transform: scale(1.005);
+    }
+
+    /* header with deep blue wave */
+    .form-header {
+      background: linear-gradient(135deg, #0a3e6d, #1a5f9e);
+      padding: 1.8rem 2.5rem;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 6px solid #7ab7ef;
+    }
+
+    .form-header i {
+      font-size: 2.2rem;
+      background: rgba(255,255,255,0.15);
+      padding: 12px;
+      border-radius: 50%;
+      box-shadow: 0 6px 12px rgba(0,20,50,0.2);
+    }
+
+    .form-header h2 {
+      font-weight: 600;
+      font-size: 1.9rem;
+      letter-spacing: -0.02em;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .form-header p {
+      font-size: 0.9rem;
+      opacity: 0.85;
+      margin-top: 4px;
+      font-weight: 400;
+    }
+
+    /* main form area */
+    .form-body {
+      padding: 2.5rem 2.8rem;
+      background: #ffffff;
+    }
+
+    /* TWO‑COLUMN GRID for the whole form */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem 2rem;
+    }
+
+    /* each section spans one column */
+    .form-section {
+      border-bottom: 1px solid #e3ecf7;
+      padding-bottom: 1.5rem;
+      margin-bottom: 0.5rem;
+      height: fit-content;
+    }
+
+    /* full‑width sections occupy both columns */
+    .full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-section:last-child {
+      border-bottom: none;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #0b3b5c;
+      margin-bottom: 1.2rem;
+    }
+
+    .section-title i {
+      color: #2a7fcf;
+      background: #e2efff;
+      padding: 8px;
+      border-radius: 12px;
+      font-size: 1rem;
+    }
+
+    /* field styling */
+    .field-group {
+      margin-bottom: 1.2rem;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #1e4f7a;
+      margin-bottom: 5px;
+    }
+
+    label i {
+      font-size: 0.9rem;
+      color: #3a8cd0;
+      width: 18px;
+    }
+
+    .required::after {
+      content: " *";
+      color: #ef4444;
+      font-weight: bold;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      background-color: #f8fcff;
+      border: 1.5px solid #cde0f0;
+      border-radius: 18px;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+      outline: none;
+      color: #0b2f4a;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #1e81d9;
+      background-color: #ffffff;
+      box-shadow: 0 4px 12px rgba(28, 110, 194, 0.15);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 85px;
+    }
+
+    /* input icon positioning */
+    .input-icon {
+      position: relative;
+    }
+
+    .input-icon i {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #749fc3;
+      font-size: 1rem;
+    }
+
+    .input-icon input, .input-icon select {
+      padding-left: 40px;
+    }
+
+    /* radio group modern toggle */
+    .radio-group {
+      display: flex;
+      gap: 1.8rem;
+      background: #f1f9ff;
+      padding: 0.8rem 1.2rem;
+      border-radius: 40px;
+      border: 1px solid #c1dcf5;
+      margin: 0.3rem 0 0.8rem 0;
+    }
+
+    .radio-group div {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .radio-group input[type="radio"] {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #628fb0;
+      border-radius: 50%;
+      background: white;
+      transition: 0.15s;
+      cursor: pointer;
+      margin: 0;
+      padding: 0;
+    }
+
+    .radio-group input[type="radio"]:checked {
+      border: 6px solid #0f6ab4;
+      background: white;
+    }
+
+    .radio-group label {
+      font-weight: 500;
+      margin: 0;
+      color: #113856;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+
+    /* checkbox group for reminders */
+    .checkbox-group {
+      display: flex;
+      gap: 2rem;
+      background: #f1f9ff;
+      padding: 0.8rem 1.2rem;
+      border-radius: 40px;
+      border: 1px solid #c1dcf5;
+      margin: 0.3rem 0 0.8rem 0;
+    }
+
+    .checkbox-group div {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #0f6ab4;
+      margin: 0;
+    }
+
+    .checkbox-group label {
+      font-weight: 500;
+      margin: 0;
+      color: #113856;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+
+    /* conditional section (slide) */
+    .conditional-section {
+      display: none;
+      background: #f4fafe;
+      padding: 1.2rem 1.2rem 0.8rem 1.2rem;
+      border-radius: 20px;
+      margin: 0.5rem 0 1rem 0;
+      border-left: 5px solid #3385d6;
+      transition: all 0.2s;
+    }
+
+    .conditional-section.show {
+      display: block;
+    }
+
+    .conditional-section textarea {
+      background: white;
+    }
+
+    /* hint & password rule */
+    .input-hint {
+      font-size: 0.75rem;
+      color: #5982a3;
+      margin-top: 5px;
+      margin-left: 12px;
+    }
+
+    .password-rule {
+      font-size: 0.75rem;
+      color: #3481c4;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* submit button — spans both columns */
+    .submit-btn {
+      margin-top: 1.5rem;
+      width: 100%;
+      background: linear-gradient(115deg, #0f4880, #2173b8);
+      border: none;
+      padding: 1.1rem 1.5rem;
+      border-radius: 50px;
+      color: white;
+      font-size: 1.25rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px -5px #1b6ecf80;
+      transition: all 0.2s;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .submit-btn i {
+      font-size: 1.3rem;
+    }
+
+    .submit-btn:hover {
+      background: linear-gradient(115deg, #1b5690, #2c86d1);
+      box-shadow: 0 12px 28px -6px #0e5090;
+      transform: translateY(-3px);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    /* alert message */
+    .alert-message {
+      background-color: #fff3e0;
+      border-left: 5px solid #ffb74d;
+      padding: 0.8rem 1.2rem;
+      border-radius: 14px;
+      color: #854d0e;
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+      display: none;
+      align-items: center;
+      gap: 12px;
+      grid-column: 1 / -1;
+    }
+
+    .alert-message.show {
+      display: flex;
+    }
+
+    /* success modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal.active {
+      display: flex;
+    }
+    .modal-content {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .modal-header i {
+      font-size: 3rem;
+      color: #10b981;
+    }
+    .modal-body {
+      margin-bottom: 1.5rem;
+    }
+    .modal-body h3 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-dark);
+    }
+    .modal-body p {
+      color: #64748b;
+    }
+    .modal-footer button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 0.8rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* responsive */
+    @media (max-width: 720px) {
+      .form-grid {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+      }
+      .form-body {
+        padding: 1.8rem;
+      }
+      .top-bar {
+        padding: 1rem 1.5rem;
+      }
+    }
+  
+    /* ── VALIDATION STYLES ── */
+    .field-msg { font-size:.78rem; margin-top:.25rem; min-height:1rem; display:block; }
+    .field-msg.error { color:#ef4444; }
+    .field-msg.ok    { color:#10b981; }
+    input.invalid, select.invalid, textarea.invalid { border-color:#ef4444!important; background:#fff5f5!important; }
+    input.valid, select.valid, textarea.valid { border-color:#10b981!important; background:#f0fdf4!important; }
+    .pwd-strength { height:4px; border-radius:2px; margin-top:.3rem; background:#e2e8f0; }
+    .pwd-strength-bar { height:100%; border-radius:2px; width:0; transition:width .4s,background .4s; }
+    .strength-label { font-size:.75rem; margin-top:.2rem; font-weight:600; }
+    @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+    .shake { animation:shake .4s ease; }
+</style>
+</head>
+<body>
+
+  <!-- TOP BAR with logo (left) and MAIN button (right) -->
+  <div class="top-bar">
+    <div class="logo-area">
+      <img src="/static/images/logo.jpg" alt="MedCare Logo">
+      <span>Wellsync</span>
+    </div>
+    <a href="/templates/index.html" class="main-btn">
+      <i class="fas fa-home"></i> MAIN
+    </a>
+  </div>
+
+  <!-- Main Registration Card -->
+  <div class="form-card">
+    <div class="form-header">
+      <i class="fas fa-notes-medical"></i>
+      <div>
+        <h2>Patient Registration</h2>
+        <p>Create your patient account</p>
+      </div>
+    </div>
+
+    <div class="form-body">
+      <!-- Alert (spans both columns) -->
+      <div id="liveAlert" class="alert-message">
+        <i class="fas fa-circle-exclamation" style="font-size: 1.4rem;"></i>
+        <span id="alertText">Please check your information</span>
+      </div>
+
+      <form id="patientForm" method="POST" action="{{ url_for('auth.patient_signup') }}">
+        <!-- TWO‑COLUMN GRID -->
+        <div class="form-grid">
+
+          <!-- ===== LEFT COLUMN ===== -->
+          <!-- Personal details (left) -->
+          <div class="form-section">
+            <div class="section-title">
+              <i class="fas fa-id-card"></i>
+              <span>Personal details</span>
+            </div>
+            <div class="field-group">
+              <label class="required"><i class="fas fa-user"></i> Full name</label>
+              <div class="input-icon">
+                <i class="fas fa-pen"></i>
+                <input type="text" id="fullname" name="fullname" placeholder="e.g., John Smith" required>
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="required"><i class="fas fa-venus-mars"></i> Gender</label>
+              <div class="input-icon">
+                <i class="fas fa-globe"></i>
+                <select id="gender" name="gender" required>
+                  <option value="" disabled selected>– select –</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="required"><i class="fas fa-tint"></i> Blood Group</label>
+              <div class="input-icon">
+                <i class="fas fa-droplet"></i>
+                <select id="bloodgroup" name="bloodgroup" required>
+                  <option value="" disabled selected>– select –</option>
+                  <option value="A+">A+</option>
+                  <option value="A-">A-</option>
+                  <option value="B+">B+</option>
+                  <option value="B-">B-</option>
+                  <option value="O+">O+</option>
+                  <option value="O-">O-</option>
+                  <option value="AB+">AB+</option>
+                  <option value="AB-">AB-</option>
+                </select>
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="required"><i class="fas fa-phone"></i> Phone</label>
+              <div class="input-icon">
+                <i class="fas fa-mobile-alt"></i>
+                <input type="tel" id="phone" name="phone" placeholder="+1 (555) 123-4567" required>
+                <span class="field-msg" id="msg-phone"></span>
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="required"><i class="fas fa-calendar-alt"></i> Date of Birth</label>
+              <div class="input-icon">
+                <i class="fas fa-calendar"></i>
+                <input type="date" id="dob" name="dob" required>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== RIGHT COLUMN ===== -->
+          <!-- Contact & address (right) -->
+          <div class="form-section">
+            <div class="section-title">
+              <i class="fas fa-address-book"></i>
+              <span>Contact & address</span>
+            </div>
+            <div class="field-group">
+              <label class="required"><i class="fas fa-envelope"></i> Email</label>
+              <div class="input-icon">
+                <i class="fas fa-at"></i>
+                <input type="email" id="email" name="email" placeholder="patient@example.com" required>
+                <span class="field-msg" id="msg-email"></span>
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="required"><i class="fas fa-map-pin"></i> Address</label>
+              <textarea id="address" name="address" rows="3" placeholder="Street, city, postal code ..." required></textarea>
+            </div>
+          </div>
+
+          <!-- ===== LEFT COLUMN (second row) ===== -->
+          <!-- Security credentials (left) -->
+          <div class="form-section">
+            <div class="section-title">
+              <i class="fas fa-lock"></i>
+              <span>Security credentials</span>
+            </div>
+            <div class="field-group">
+              <label class="required"><i class="fas fa-qrcode"></i> PATIENT ID</label>
+              <div class="input-icon">
+                <i class="fas fa-hashtag"></i>
+                <input type="text" id="patient_id" name="patient_id" pattern="[A-Za-z0-9]{6}" placeholder="e.g., PT24A6" maxlength="6" required>
+                <span class="field-msg" id="msg-patid"></span>
+              </div>
+              <div class="input-hint"><i class="fas fa-info-circle"></i> exactly 6 characters</div>
+            </div>
+            <div class="field-group">
+              <label class="required"><i class="fas fa-key"></i> Password</label>
+              <div class="input-icon">
+                <i class="fas fa-asterisk"></i>
+                <input type="password" id="password" name="password" minlength="6" placeholder="••••••" required>
+                <div class="pwd-strength"><div class="pwd-strength-bar" id="pwd-bar"></div></div>
+                <span class="strength-label" id="pwd-label"></span>
+                <span class="field-msg" id="msg-pwd"></span>
+              </div>
+              <div class="password-rule"><i class="fas fa-check-circle"></i> min. 6 characters</div>
+            </div>
+            <div class="field-group">
+              <label class="required"><i class="fas fa-redo-alt"></i> Confirm password</label>
+              <div class="input-icon">
+                <i class="fas fa-check-double"></i>
+                <input type="password" id="confirmPassword" name="confirmPassword" minlength="6" placeholder="re-enter" required>
+                <span class="field-msg" id="msg-confirm"></span>
+              </div>
+            </div>
+          </div>
+
+          <!-- ===== RIGHT COLUMN (second row) ===== -->
+          <!-- Medical information & Reminder Preferences (right) -->
+          <div class="form-section">
+            <div class="section-title">
+              <i class="fas fa-notes-medical"></i>
+              <span>Medical information</span>
+            </div>
+            
+            <label><i class="fas fa-heartbeat"></i> Chronic conditions?</label>
+            <div class="radio-group" id="conditionsOption">
+              <div><input type="radio" name="conditionsOption" value="Yes" id="condYes"> <label for="condYes">Yes</label></div>
+              <div><input type="radio" name="conditionsOption" value="No" id="condNo" checked> <label for="condNo">No</label></div>
+            </div>
+            <div class="conditional-section" id="conditionsDetails">
+              <label><i class="fas fa-notes"></i> Please describe</label>
+              <textarea name="conditionsDesc" placeholder="e.g., diabetes, hypertension ..." rows="2"></textarea>
+            </div>
+
+            <label style="margin-top: 10px;"><i class="fas fa-allergies"></i> Any allergies?</label>
+            <div class="radio-group" id="allergiesOption">
+              <div><input type="radio" name="allergiesOption" value="Yes" id="allYes"> <label for="allYes">Yes</label></div>
+              <div><input type="radio" name="allergiesOption" value="No" id="allNo" checked> <label for="allNo">No</label></div>
+            </div>
+            <div class="conditional-section" id="allergiesDetails">
+              <label><i class="fas fa-notes"></i> List allergies</label>
+              <textarea name="allergiesDesc" placeholder="e.g., penicillin, peanuts ..." rows="2"></textarea>
+            </div>
+
+            <label style="margin-top: 10px;"><i class="fas fa-capsules"></i> Current medications?</label>
+            <div class="radio-group" id="medicationsOption">
+              <div><input type="radio" name="medicationsOption" value="Yes" id="medYes"> <label for="medYes">Yes</label></div>
+              <div><input type="radio" name="medicationsOption" value="No" id="medNo" checked> <label for="medNo">No</label></div>
+            </div>
+            <div class="conditional-section" id="medicationsDetails">
+              <label><i class="fas fa-notes"></i> Specify medications</label>
+              <textarea name="medicationsDesc" placeholder="medication names, dosage ..." rows="2"></textarea>
+            </div>
+
+            <label style="margin-top: 10px;"><i class="fas fa-scalpel"></i> Past surgeries?</label>
+            <div class="radio-group" id="surgeriesOption">
+              <div><input type="radio" name="surgeriesOption" value="Yes" id="surYes"> <label for="surYes">Yes</label></div>
+              <div><input type="radio" name="surgeriesOption" value="No" id="surNo" checked> <label for="surNo">No</label></div>
+            </div>
+            <div class="conditional-section" id="surgeriesDetails">
+              <label><i class="fas fa-notes"></i> Describe surgeries</label>
+              <textarea name="surgeriesDesc" placeholder="year, procedure ..." rows="2"></textarea>
+            </div>
+
+            <!-- Reminder Preferences Section -->
+            <div style="margin-top: 20px;">
+              <div class="section-title">
+                <i class="fas fa-bell"></i>
+                <span>Reminder Preferences</span>
+              </div>
+              <p style="color: #3f6b95; font-size: 0.9rem; margin-bottom: 10px;">How would you like to receive appointment reminders?</p>
+              
+              <div class="checkbox-group">
+                <div>
+                  <input type="checkbox" id="reminderSMS" name="reminderSMS" value="SMS" checked>
+                  <label for="reminderSMS"><i class="fas fa-comment-sms" style="color: #1d70b8;"></i> SMS</label>
+                </div>
+                <div>
+                  <input type="checkbox" id="reminderWhatsApp" name="reminderWhatsApp" value="WhatsApp">
+                  <label for="reminderWhatsApp"><i class="fab fa-whatsapp" style="color: #25D366;"></i> WhatsApp</label>
+                </div>
+              </div>
+              <div class="input-hint"><i class="fas fa-info-circle"></i> You can select both options</div>
+            </div>
+          </div>
+        </div> <!-- end form-grid -->
+
+        <!-- submit button -->
+        <button type="submit" class="submit-btn">
+          <i class="fas fa-check-circle"></i> Register patient
+          <i class="fas fa-arrow-right" style="font-size: 1rem;"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div id="successModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <div class="modal-body">
+        <h3>Registration Successful!</h3>
+        <p>Redirecting you to login page...</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Toggle conditional sections
+    const pairs = [
+      { radioName: 'conditionsOption', sectionId: 'conditionsDetails' },
+      { radioName: 'allergiesOption', sectionId: 'allergiesDetails' },
+      { radioName: 'medicationsOption', sectionId: 'medicationsDetails' },
+      { radioName: 'surgeriesOption', sectionId: 'surgeriesDetails' }
+    ];
+
+    pairs.forEach(p => {
+      const radios = document.getElementsByName(p.radioName);
+      const section = document.getElementById(p.sectionId);
+      if (!radios.length || !section) return;
+
+      const updateSection = () => {
+        let show = false;
+        radios.forEach(r => { if (r.checked && r.value === 'Yes') show = true; });
+        if (show) section.classList.add('show');
+        else section.classList.remove('show');
+      };
+
+      radios.forEach(r => r.addEventListener('change', updateSection));
+      updateSection();  
+    });
+
+    // Form validation and submission
+    const form = document.getElementById('patientForm');
+    const alertBox = document.getElementById('liveAlert');
+    const alertSpan = document.getElementById('alertText');
+
+    // Show success modal and redirect
+    window.showSuccessAndRedirect = function() {
+      const modal = document.getElementById('successModal');
+      modal.classList.add('active');
+      
+      // Redirect to login page after 2 seconds
+      setTimeout(() => {
+        window.location.href = '/templates/login.html';
+      }, 2000);
+    };
+
+
+    // ── HELPERS ──
+    function setMsg(id, msg, type) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = msg;
+      el.className = 'field-msg ' + (type||'');
+    }
+    function setFieldState(fieldId, valid, msg, msgId) {
+      var el = document.getElementById(fieldId);
+      if (!el) return;
+      el.classList.toggle('valid', valid);
+      el.classList.toggle('invalid', !valid);
+      if (msgId) setMsg(msgId, msg, valid ? 'ok' : 'error');
+    }
+
+    // ── REAL-TIME: Phone ──
+    document.getElementById('phone').addEventListener('input', function() {
+      var v = this.value.trim();
+      var ph = v.replace(/[^0-9+]/g,'');
+      var ok = ph.length >= 10 && ph.length <= 15;
+      setFieldState('phone', ok, ok ? '✓ Valid phone number' : 'Enter a valid phone number (10-15 digits)', 'msg-phone');
+    });
+
+    // ── REAL-TIME: Email ──
+    document.getElementById('email').addEventListener('input', function() {
+      var v = this.value.trim();
+      var ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+      setFieldState('email', ok, ok ? '✓ Valid email' : 'Enter a valid email address', 'msg-email');
+    });
+
+    // ── REAL-TIME: Patient ID ──
+    document.getElementById('patient_id').addEventListener('input', function() {
+      var v = this.value.trim();
+      var ok = /^[A-Za-z0-9]{6}$/.test(v);
+      setFieldState('patient_id', ok,
+        ok ? '✓ Valid Patient ID' : 'Must be exactly 6 letters/numbers (e.g. PT0987)',
+        'msg-patid');
+    });
+
+    // ── REAL-TIME: Password strength ──
+    document.getElementById('password').addEventListener('input', function() {
+      var v = this.value;
+      var bar   = document.getElementById('pwd-bar');
+      var label = document.getElementById('pwd-label');
+      var score = 0;
+      if (v.length >= 6)  score++;
+      if (v.length >= 10) score++;
+      if (/[A-Z]/.test(v)) score++;
+      if (/[0-9]/.test(v)) score++;
+      if (/[^A-Za-z0-9]/.test(v)) score++;
+      var colors = ['#ef4444','#f97316','#f59e0b','#10b981','#2563eb'];
+      var labels = ['Too weak','Weak','Fair','Strong','Very strong'];
+      var pct    = [20,40,60,80,100];
+      if (bar)   { bar.style.width = pct[score-1]+'%'; bar.style.background = colors[score-1]||'#e2e8f0'; }
+      if (label) { label.textContent = v.length ? labels[score-1]||'' : ''; label.style.color = colors[score-1]||''; }
+      setFieldState('password', v.length >= 6, v.length >= 6 ? '' : 'Minimum 6 characters', 'msg-pwd');
+      // Also re-validate confirm
+      var cf = document.getElementById('confirmPassword').value;
+      if (cf) {
+        var match = cf === v;
+        setFieldState('confirmPassword', match, match ? '✓ Passwords match' : 'Passwords do not match', 'msg-confirm');
+      }
+    });
+
+    // ── REAL-TIME: Confirm password ──
+    document.getElementById('confirmPassword').addEventListener('input', function() {
+      var pwd = document.getElementById('password').value;
+      var ok  = this.value === pwd && this.value.length > 0;
+      setFieldState('confirmPassword', ok, ok ? '✓ Passwords match' : 'Passwords do not match', 'msg-confirm');
+    });
+
+    // ── SUBMIT VALIDATION ──
+    form.addEventListener('submit', function(e) {
+      var errors = [];
+      var firstErr = null;
+
+      function checkField(id, condition, msg, msgId) {
+        var el = document.getElementById(id);
+        if (!condition) {
+          errors.push(msg);
+          if (el) { el.classList.add('invalid'); el.classList.remove('valid'); }
+          if (msgId) setMsg(msgId, msg, 'error');
+          if (!firstErr) firstErr = el;
+        }
+      }
+
+      var fullname   = document.getElementById('fullname').value.trim();
+      var gender     = document.getElementById('gender').value;
+      var bloodgroup = document.getElementById('bloodgroup').value;
+      var phone      = document.getElementById('phone').value.trim();
+      var dob        = document.getElementById('dob').value;
+      var email      = document.getElementById('email').value.trim();
+      var address    = document.getElementById('address').value.trim();
+      var patId      = document.getElementById('patient_id').value.trim();
+      var pwd        = document.getElementById('password').value;
+      var confirm    = document.getElementById('confirmPassword').value;
+
+      checkField('fullname',    fullname.length >= 2,                  'Full name is required');
+      checkField('gender',      gender !== '',                          'Please select your gender');
+      checkField('bloodgroup',  bloodgroup !== '',                      'Please select your blood group');
+      checkField('phone',       /^[+]?[0-9]{10,15}$/.test(phone.replace(/[\s-]/g,'')), 'Enter a valid phone number', 'msg-phone');
+      checkField('dob',         dob !== '',                             'Date of birth is required');
+      checkField('email',       /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email), 'Enter a valid email', 'msg-email');
+      checkField('address',     address.length >= 5,                   'Address is required');
+      checkField('patient_id',  /^[A-Za-z0-9]{6}$/.test(patId),       'Patient ID must be exactly 6 alphanumeric characters', 'msg-patid');
+      checkField('password',    pwd.length >= 6,                       'Password must be at least 6 characters', 'msg-pwd');
+      checkField('confirmPassword', pwd === confirm && confirm.length > 0, 'Passwords do not match', 'msg-confirm');
+
+      if (errors.length > 0) {
+        e.preventDefault();
+        alertSpan.innerText = errors[0];
+        alertBox.classList.add('show');
+        if (firstErr) firstErr.scrollIntoView({ behavior:'smooth', block:'center' });
+        // Shake the submit button
+        var btn = form.querySelector('.submit-btn');
+        if (btn) { btn.classList.add('shake'); setTimeout(function(){ btn.classList.remove('shake'); }, 400); }
+        return;
+      }
+      alertBox.classList.remove('show');
+    });
+
+    // ── PASSWORD CHECKLIST ──
+    (function() {
+      var pwdInput = document.getElementById('password');
+      if (!pwdInput) return;
+      var checklist = document.createElement('div');
+      checklist.className = 'pwd-checklist';
+      checklist.id = 'pwdChecklist';
+      checklist.innerHTML =
+        '<div class="pwd-title">Password must include:</div>'
+        + '<div class="pwd-rule" id="rule-len"><i class="fas fa-times-circle"></i> <span>8–20 characters</span></div>'
+        + '<div class="pwd-rule" id="rule-upper"><i class="fas fa-times-circle"></i> <span>At least one capital letter</span></div>'
+        + '<div class="pwd-rule" id="rule-num"><i class="fas fa-times-circle"></i> <span>At least one number</span></div>'
+        + '<div class="pwd-rule ok" id="rule-space"><i class="fas fa-check-circle"></i> <span>No spaces</span></div>';
+      var parent = pwdInput.parentNode;
+      parent.parentNode.insertBefore(checklist, parent.nextSibling);
+      function chk(id, ok) {
+        var el = document.getElementById(id); if (!el) return;
+        el.className = ok ? 'pwd-rule ok' : 'pwd-rule';
+        el.querySelector('i').className = ok ? 'fas fa-check-circle' : 'fas fa-times-circle';
+      }
+      pwdInput.addEventListener('focus', function() { checklist.classList.add('show'); });
+      pwdInput.addEventListener('blur',  function() {
+        // Keep visible if there's a value so user can see status
+        if (!pwdInput.value) checklist.classList.remove('show');
+      });
+      pwdInput.addEventListener('input', function() {
+        var v = this.value;
+        checklist.classList.add('show');
+        chk('rule-len',   v.length >= 8 && v.length <= 20);
+        chk('rule-upper', /[A-Z]/.test(v));
+        chk('rule-num',   /[0-9]/.test(v));
+        chk('rule-space', !/\s/.test(v));
+      });
+    })();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login · White & Blue · Agent / Doctor / Patient</title>
+  <!-- Font Awesome 6 -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(145deg, #f0f8ff 0%, #ffffff 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      position: relative;
+      /* subtle medical/blue background */
+      background-image: radial-gradient(circle at 10% 30%, rgba(100, 180, 255, 0.08) 0%, transparent 30%),
+                        radial-gradient(circle at 90% 70%, rgba(50, 120, 220, 0.06) 0%, transparent 35%);
+    }
+
+    /* ----- TOP BAR with logo (left) and logout (right) ----- */
+    .top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 3rem;
+      background: transparent;
+      z-index: 10;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.6);
+      backdrop-filter: blur(4px);
+      padding: 0.5rem 1.5rem;
+      border-radius: 60px;
+      box-shadow: 0 4px 12px rgba(0,40,80,0.1);
+      border: 1px solid white;
+    }
+
+    /* Your actual logo image */
+    .logo-area img {
+      height: 40px;
+      width: auto;
+      display: block;
+    }
+
+    .logo-area span {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #0b3d5c;
+    }
+
+    .logout-btn {
+      background: white;
+      border: 1px solid #c5dfff;
+      color: #1d6eb0;
+      padding: 0.6rem 1.8rem;
+      border-radius: 40px;
+      font-size: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      box-shadow: 0 4px 10px rgba(0,60,130,0.1);
+    }
+
+    .logout-btn:hover {
+      background: #e3f0ff;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(0,90,180,0.15);
+    }
+
+    .logout-btn i {
+      font-size: 1rem;
+    }
+
+    .login-card {
+      max-width: 520px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(4px);
+      border-radius: 32px;
+      box-shadow: 0 25px 45px -15px #0a3c5e80, 0 10px 20px -10px #0b4b7930;
+      padding: 2.8rem 2.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-top: 80px; /* space for fixed top bar */
+    }
+
+    .login-card:hover {
+      box-shadow: 0 30px 55px -18px #0d4f82;
+      transform: translateY(-3px);
+    }
+
+    /* header same style as registration forms */
+    .login-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .login-header i {
+      font-size: 3.2rem;
+      color: #1a6bb0;
+      background: #e3f0ff;
+      padding: 18px;
+      border-radius: 60px;
+      box-shadow: 0 10px 18px -6px #2370b550;
+      margin-bottom: 0.8rem;
+    }
+
+    .login-header h2 {
+      color: #0b3d5c;
+      font-weight: 650;
+      font-size: 2.2rem;
+      letter-spacing: -0.02em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .login-header p {
+      color: #4279a7;
+      font-weight: 400;
+      font-size: 1rem;
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    /* alert style consistent */
+    .login-alert {
+      display: none;
+      background-color: #fff3e5;
+      border-left: 8px solid #ea862e;
+      padding: 0.9rem 1.2rem;
+      border-radius: 50px;
+      color: #a35200;
+      font-weight: 500;
+      margin-bottom: 2rem;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 4px 12px #e08d3b20;
+    }
+
+    .login-alert.show {
+      display: flex;
+    }
+
+    .login-alert i {
+      font-size: 1.4rem;
+    }
+
+    /* role selector tabs (agent/doctor/patient) */
+    .role-tabs {
+      display: flex;
+      gap: 0.8rem;
+      margin-bottom: 2rem;
+      background: #ecf5fd;
+      padding: 0.5rem;
+      border-radius: 60px;
+      border: 1px solid #c5dfff;
+    }
+
+    .role-option {
+      flex: 1;
+      text-align: center;
+      padding: 0.8rem 0.5rem;
+      border-radius: 50px;
+      font-weight: 600;
+      color: #195d93;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: transparent;
+      border: none;
+      font-size: 1rem;
+    }
+
+    .role-option i {
+      font-size: 1.2rem;
+      color: #397eb0;
+    }
+
+    .role-option.active {
+      background: white;
+      box-shadow: 0 6px 14px -6px #2680ce80;
+      color: #0b4a7c;
+      border: 1px solid #b5d8ff;
+    }
+
+    .role-option.active i {
+      color: #1d70b8;
+    }
+
+    /* form fields – same style as registration */
+    label {
+      display: block;
+      margin: 1.2rem 0 0.3rem 0;
+      font-weight: 600;
+      color: #145a8d;
+      font-size: 0.95rem;
+      letter-spacing: 0.02rem;
+    }
+
+    label i {
+      margin-right: 6px;
+      color: #2f7ec9;
+    }
+
+    input {
+      width: 100%;
+      padding: 1rem 1.3rem;
+      border: 1.5px solid #cde0f0;
+      border-radius: 30px;
+      font-size: 1rem;
+      background: #ffffff;
+      transition: all 0.2s;
+      outline: none;
+      color: #103956;
+    }
+
+    input:focus {
+      border-color: #1f8cda;
+      box-shadow: 0 6px 16px #1f8cda25;
+      background-color: #fefefe;
+    }
+
+    input::placeholder {
+      color: #9dbddb;
+      font-weight: 300;
+    }
+
+    /* field with icon inside */
+    .input-icon {
+      position: relative;
+    }
+
+    .input-icon i {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #699dc9;
+      font-size: 1.1rem;
+      z-index: 2;
+    }
+
+    .input-icon input {
+      padding-left: 48px;
+    }
+
+    /* forgot & helper links */
+    .login-utilities {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 1.2rem 0 1.8rem 0;
+    }
+
+    .remember {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #2b608b;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .remember input {
+      width: auto;
+      accent-color: #1a73c4;
+      transform: scale(1.1);
+      margin: 0;
+    }
+
+    .forgot-link {
+      color: #1e72b5;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border-bottom: 1px dashed #9ec3e5;
+    }
+
+    .forgot-link:hover {
+      color: #0a4f86;
+      border-bottom-style: solid;
+    }
+
+    /* login button – same gradient as registration submit */
+    .login-btn {
+      width: 100%;
+      background: linear-gradient(105deg, #1360a3, #2180cf);
+      border: none;
+      padding: 1.1rem 1.5rem;
+      border-radius: 60px;
+      color: white;
+      font-size: 1.3rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 12px 24px -8px #1c6eb2;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      border: 1px solid #9ac6ff;
+    }
+
+    .login-btn:hover {
+      background: linear-gradient(105deg, #1b6eb5, #2b91e0);
+      box-shadow: 0 16px 30px -8px #125aa5;
+      transform: scale(1.02);
+    }
+
+    .login-btn:active {
+      transform: scale(1);
+    }
+
+    /* sign up link consistent */
+    .signup-prompt {
+      text-align: center;
+      margin-top: 2rem;
+      color: #3c6e99;
+      font-size: 0.95rem;
+    }
+
+    .signup-prompt a {
+      color: #1d6eb0;
+      font-weight: 600;
+      text-decoration: none;
+      border-bottom: 2px solid #bbdaff;
+    }
+
+    .signup-prompt a:hover {
+      color: #0a4980;
+      border-bottom-color: #1977cf;
+    }
+
+    /* demo hint */
+    .demo-hint {
+      margin-top: 1.8rem;
+      background: #e4f0fd;
+      border-radius: 40px;
+      padding: 0.8rem 1.2rem;
+      font-size: 0.85rem;
+      color: #1d5b8e;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid #c5e0fe;
+    }
+
+    .demo-hint i {
+      font-size: 1.1rem;
+      color: #3282d0;
+    }
+
+    /* responsive */
+    @media (max-width: 500px) {
+      .top-bar {
+        padding: 1rem 1.5rem;
+      }
+      .login-card {
+        padding: 1.8rem;
+      }
+    }
+  
+    .field-msg { font-size:.78rem; margin-top:.25rem; min-height:1rem; display:block; }
+    .field-msg.error { color:#ef4444; }
+    .field-msg.ok    { color:#10b981; }
+    input.invalid { border-color:#ef4444!important; box-shadow:0 0 0 3px rgba(239,68,68,.15)!important; }
+    input.valid   { border-color:#10b981!important; box-shadow:0 0 0 3px rgba(16,185,129,.1)!important; }
+    @keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+    .shake { animation:shake .4s ease; }
+
+    /* ── PASSWORD CHECKLIST ── */
+    .pwd-checklist {
+      display: none;
+      background: #1e293b;
+      color: white;
+      border-radius: .6rem;
+      padding: .75rem 1rem;
+      font-size: .82rem;
+      margin-top: .5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,.25);
+    }
+    .pwd-checklist.show { display: block; }
+    .pwd-checklist .pwd-title {
+      font-size: .78rem; color: #94a3b8; margin-bottom: .45rem;
+      font-weight: 600; letter-spacing: .03em;
+    }
+    .pwd-rule {
+      display: flex; align-items: center; gap: .45rem;
+      padding: .25rem 0; color: #ef4444; transition: color .2s;
+    }
+    .pwd-rule.ok { color: #4ade80; }
+    .pwd-rule i  { font-size: .8rem; width: 14px; text-align: center; }
+    .pwd-rule span { font-weight: 500; }
+
+    /* ── ID FORMAT HINT ── */
+    .id-hint {
+      background: #1e293b;
+      color: white;
+      border-radius: .6rem;
+      padding: .75rem 1rem;
+      font-size: .83rem;
+      margin-top: .4rem;
+      box-shadow: 0 4px 16px rgba(0,0,0,.3);
+      animation: fadeHint .15s ease;
+    }
+    @keyframes fadeHint { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
+    .hint-title {
+      font-size: .76rem; color: #94a3b8; font-weight: 700;
+      letter-spacing: .04em; margin-bottom: .5rem;
+      text-transform: uppercase;
+    }
+    .hint-rule {
+      display: flex; align-items: center; gap: .5rem;
+      padding: .22rem 0; color: #ef4444;
+      font-size: .82rem; font-weight: 500;
+      transition: color .2s;
+    }
+    .hint-rule.ok { color: #4ade80; }
+    .hint-rule i  { width: 14px; font-size: .8rem; flex-shrink: 0; }
+    .id-eg {
+      background: #334155; padding: .1rem .4rem;
+      border-radius: 4px; font-size: .75rem; color: #93c5fd;
+      font-family: monospace;
+    }
+</style>
+</head>
+<body>
+
+  <!-- TOP BAR with logo (left) and logout (right) - completely outside the card -->
+  <div class="top-bar">
+    <div class="logo-area">
+      <!-- Your actual logo image - replace the src with your logo path -->
+      <img src="/static/images/logo.jpg" alt="MedCare Logo">
+      <span>Wellsync</span>
+    </div>
+    <a href="{{ url_for('index') }}" class="logout-btn">
+      <i class="fas fa-sign-out-alt"></i> MAIN
+    </a>
+  </div>
+
+  <!-- Main Login Card -->
+  <div class="login-card">
+    <!-- top icon & heading -->
+    <div class="login-header">
+     
+      <h2><i class="fas fa-lock-open" style="font-size: 1.8rem;"></i>Login</h2>
+    </div>
+
+    {% if error %}
+    <div class="login-alert show">
+      <i class="fas fa-circle-exclamation"></i>
+      <span>{{ error }}</span>
+    </div>
+    {% endif %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+      <div class="login-alert show">
+        <i class="fas fa-circle-exclamation"></i>
+        <span>{{ message }}</span>
+      </div>
+      {% endfor %}
+    {% endwith %}
+
+    <!-- unified alert for errors (JS only) -->
+    <div id="loginAlert" class="login-alert">
+      <i class="fas fa-circle-exclamation"></i>
+      <span id="alertMessage">Invalid credentials</span>
+    </div>
+
+    <!-- role selector (tabs) -->
+    <div class="role-tabs" id="roleTabs">
+      <button type="button" class="role-option active" data-role="agent"><i class="fas fa-user-tie"></i> Agent</button>
+      <button type="button" class="role-option" data-role="doctor"><i class="fas fa-user-md"></i> Doctor</button>
+      <button type="button" class="role-option" data-role="patient"><i class="fas fa-notes-medical"></i> Patient</button>
+    </div>
+
+    <!-- login form (single form, role determines action) -->
+    <form id="loginForm" method="POST" action="{{ url_for('auth.login') }}">
+      <input type="hidden" name="role" id="selectedRole" value="agent">
+      <!-- dynamic action set by js, default to agent -->
+      <label for="userId"><i class="fas fa-id-badge"></i> User ID </label>
+      <div class="input-icon">
+        <i class="fas fa-user"></i>
+        <input type="text" id="userId" name="user_id" placeholder="agent ID (5 chars)" required autocomplete="username">
+      </div>
+      <!-- ID format hint - shown on focus -->
+      <div class="id-hint" id="idHint" style="display:none;">
+        <!-- AGENT rules -->
+        <div id="hint-agent" style="display:none;">
+          <div class="hint-title">Agent ID must include:</div>
+          <div class="hint-rule" id="ag-len"><i class="fas fa-times-circle"></i> <span>Exactly 5 characters</span></div>
+          <div class="hint-rule" id="ag-alnum"><i class="fas fa-times-circle"></i> <span>Letters and numbers only</span></div>
+          <div class="hint-rule" id="ag-eg"><i class="fas fa-info-circle" style="color:#94a3b8;"></i> <span style="color:#94a3b8;">Example: <span class="id-eg">AX•••</span></span></div>
+        </div>
+        <!-- DOCTOR rules -->
+        <div id="hint-doctor" style="display:none;">
+          <div class="hint-title">Doctor ID must include:</div>
+          <div class="hint-rule" id="dr-len"><i class="fas fa-times-circle"></i> <span>Exactly 4 characters</span></div>
+          <div class="hint-rule" id="dr-alnum"><i class="fas fa-times-circle"></i> <span>Letters and numbers only</span></div>
+          <div class="hint-rule" id="dr-eg"><i class="fas fa-info-circle" style="color:#94a3b8;"></i> <span style="color:#94a3b8;">Example: <span class="id-eg">DR••</span></span></div>
+        </div>
+        <!-- PATIENT rules -->
+        <div id="hint-patient" style="display:none;">
+          <div class="hint-title">Patient — enter either:</div>
+          <div class="hint-rule" id="pt-id"><i class="fas fa-times-circle"></i> <span>Patient ID — 6 alphanumeric &nbsp;<span class="id-eg">PT••••</span></span></div>
+          <div class="hint-rule" id="pt-phone"><i class="fas fa-times-circle"></i> <span>Phone number — 10 digits &nbsp;<span class="id-eg">98••••••••</span></span></div>
+          <div class="hint-rule" id="pt-note" style="color:#94a3b8;"><i class="fas fa-info-circle"></i> <span>Only one of the above is needed</span></div>
+        </div>
+      </div>
+
+      <label for="password"><i class="fas fa-lock"></i> Password</label>
+      <div class="input-icon">
+        <i class="fas fa-key"></i>
+        <input type="password" id="password" name="password" placeholder="••••••" required>
+      </div>
+
+      <div class="login-utilities">
+        <label class="remember">
+          <input type="checkbox" name="remember"> Remember me
+        </label>
+        <a href="{{ url_for('auth.forgot_password') }}" class="forgot-link">Forgot password?</a>
+      </div>
+
+      <button type="submit" class="login-btn" id="loginBtn">
+        <i class="fas fa-check-circle"></i> Log in
+      </button>
+
+      <div class="signup-prompt">
+        Don't have an account? 
+        <a href="#" id="signupLink">Register now</a>
+      </div>
+    </form>
+  </div>
+
+  <script>
+(function() {
+
+  var roleButtons  = document.querySelectorAll('.role-option');
+  var alertBox     = document.getElementById('loginAlert');
+  var alertSpan    = document.getElementById('alertMessage');
+  var userIdInput  = document.getElementById('userId');
+  var passwordInput= document.getElementById('password');
+  var signupLink   = document.getElementById('signupLink');
+  var roleInput    = document.getElementById('selectedRole');
+  var idHint       = document.getElementById('idHint');
+
+  var currentRole = 'agent';
+
+  // ── ID FORMAT RULES ──
+  var idRules = {
+    agent:   { len: [5,5],    regex: /^[A-Za-z0-9]{5}$/,    eg: 'AX123',  hint: 'hint-agent'   },
+    doctor:  { len: [4,4],    regex: /^[A-Za-z0-9]{4}$/,    eg: 'DR24',   hint: 'hint-doctor'  },
+    patient: { len: [6,6],    regex: /^[A-Za-z0-9]{6}$/,    eg: 'PT0987', hint: 'hint-patient', phoneOk: true }
+  };
+
+  function showIdHint() {
+    if (!idHint) return;
+    idHint.style.display = 'block';
+    // Hide all role sections
+    var sections = ['hint-agent','hint-doctor','hint-patient'];
+    for (var s = 0; s < sections.length; s++) {
+      var sec = document.getElementById(sections[s]);
+      if (sec) sec.style.display = 'none';
+    }
+    // Show current role section
+    var cur = document.getElementById('hint-' + currentRole);
+    if (cur) cur.style.display = 'block';
+    validateId(userIdInput.value.trim());
+  }
+
+  function hideIdHint() {
+    if (!idHint) return;
+    idHint.style.display = 'none';
+  }
+
+  function setRule(id, ok, isInfo) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    if (isInfo) { el.className = 'hint-rule'; el.querySelector('i').className = 'fas fa-info-circle'; return; }
+    el.className = ok ? 'hint-rule ok' : 'hint-rule';
+    var icon = el.querySelector('i');
+    if (icon) icon.className = ok ? 'fas fa-check-circle' : 'fas fa-times-circle';
+  }
+
+  function validateId(val) {
+    if (!val) {
+      if (currentRole === 'agent')        { setRule('ag-len',false); setRule('ag-alnum',false); }
+      else if (currentRole === 'doctor')  { setRule('dr-len',false); setRule('dr-alnum',false); }
+      else                                { setRule('pt-id',false);  setRule('pt-phone',false); }
+      if (userIdInput) userIdInput.style.borderColor = '';
+      return;
+    }
+    if (currentRole === 'agent') {
+      var lenOk   = val.length === 5;
+      var alnOk   = /^[A-Za-z0-9]+$/.test(val);
+      setRule('ag-len',   lenOk);
+      setRule('ag-alnum', alnOk);
+      if (userIdInput) userIdInput.style.borderColor = (lenOk && alnOk) ? '#10b981' : '#ef4444';
+    } else if (currentRole === 'doctor') {
+      var dlenOk  = val.length === 4;
+      var dalnOk  = /^[A-Za-z0-9]+$/.test(val);
+      setRule('dr-len',   dlenOk);
+      setRule('dr-alnum', dalnOk);
+      if (userIdInput) userIdInput.style.borderColor = (dlenOk && dalnOk) ? '#10b981' : '#ef4444';
+    } else {
+      var isId    = /^[A-Za-z0-9]{6}$/.test(val);
+      var isPhone = /^[+]?[0-9]{10,15}$/.test(val.replace(/[\s\-]/g,''));
+      setRule('pt-id',    isId);
+      setRule('pt-phone', isPhone);
+      setRule('pt-note',  false, true);
+      if (userIdInput) userIdInput.style.borderColor = (isId || isPhone) ? '#10b981' : '#ef4444';
+    }
+  }
+
+  // ── ROLE SWITCHING ──
+  function setActiveRole(role) {
+    currentRole = role;
+    roleInput.value = role;
+
+    roleButtons.forEach(function(btn) {
+      if (btn.getAttribute('data-role') === role) btn.classList.add('active');
+      else btn.classList.remove('active');
+    });
+
+    var placeholders = {
+      agent:   'Agent ID — e.g. AX123',
+      doctor:  'Doctor ID — exactly 4 alphanumeric (e.g. DR24)',
+      patient: 'Patient ID (e.g. PT0987)  OR  Phone number (e.g. 9876543210)'
+    };
+    if (userIdInput) {
+      userIdInput.placeholder = placeholders[role] || '';
+      userIdInput.value = '';
+      userIdInput.style.borderColor = '';
+    }
+
+    if (signupLink) {
+      var urls = {
+        agent:   '/agent_signup',
+        doctor:  '/doctor_signup',
+        patient: '/patient_signup'
+      };
+      signupLink.href = urls[role] || '/patient_signup';
+    }
+
+    if (alertBox) alertBox.classList.remove('show');
+    if (idHint && idHint.style.display !== 'none') showIdHint();
+  }
+
+  roleButtons.forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      setActiveRole(btn.getAttribute('data-role'));
+    });
+  });
+
+  // ── ID INPUT LISTENERS ──
+  if (userIdInput) {
+    userIdInput.addEventListener('focus', function() { showIdHint(); });
+    userIdInput.addEventListener('blur',  function() {
+      if (!userIdInput.value) hideIdHint();
+    });
+    userIdInput.addEventListener('input', function() {
+      var v = this.value.trim();
+      if (currentRole === 'agent' || currentRole === 'doctor') {
+        this.value = this.value.toUpperCase();
+        v = this.value.trim();
+      }
+      showIdHint();
+      validateId(v);
+    });
+  }
+
+  // ── PASSWORD CHECKLIST ──
+  (function() {
+    if (!passwordInput) return;
+    var checklist = document.createElement('div');
+    checklist.className = 'pwd-checklist';
+    checklist.id = 'pwdChecklist';
+    checklist.innerHTML =
+      '<div class="pwd-title">Password must include:</div>'
+      + '<div class="pwd-rule" id="rule-len"><i class="fas fa-times-circle"></i> <span>8–20 characters</span></div>'
+      + '<div class="pwd-rule" id="rule-upper"><i class="fas fa-times-circle"></i> <span>At least one capital letter</span></div>'
+      + '<div class="pwd-rule" id="rule-num"><i class="fas fa-times-circle"></i> <span>At least one number</span></div>'
+      + '<div class="pwd-rule ok" id="rule-space"><i class="fas fa-check-circle"></i> <span>No spaces</span></div>';
+    passwordInput.parentNode.parentNode.insertBefore(checklist, passwordInput.parentNode.nextSibling);
+    function chk(id, ok) {
+      var el = document.getElementById(id); if (!el) return;
+      el.className = ok ? 'pwd-rule ok' : 'pwd-rule';
+      el.querySelector('i').className = ok ? 'fas fa-check-circle' : 'fas fa-times-circle';
+    }
+    passwordInput.addEventListener('focus', function() { checklist.classList.add('show'); });
+    passwordInput.addEventListener('blur',  function() { if (!passwordInput.value) checklist.classList.remove('show'); });
+    passwordInput.addEventListener('input', function() {
+      var v = this.value; checklist.classList.add('show');
+      chk('rule-len',   v.length >= 8 && v.length <= 20);
+      chk('rule-upper', /[A-Z]/.test(v));
+      chk('rule-num',   /[0-9]/.test(v));
+      chk('rule-space', !/\s/.test(v));
+    });
+  })();
+
+  // ── FORM SUBMIT VALIDATION ──
+  var form = document.getElementById('loginForm');
+  if (form) {
+    form.addEventListener('submit', function(e) {
+      var uid = userIdInput ? userIdInput.value.trim() : '';
+      var pwd = passwordInput ? passwordInput.value : '';
+      if (!uid || !pwd) {
+        e.preventDefault();
+        if (alertBox) alertBox.classList.add('show');
+        if (alertSpan) alertSpan.textContent = 'Please fill in all fields.';
+        return;
+      }
+      // Validate ID format
+      var rule = idRules[currentRole];
+      var ok = rule.regex.test(uid);
+      if (!ok && currentRole === 'patient') {
+        ok = /^[+]?[0-9]{10,15}$/.test(uid.replace(/[\s\-]/g,''));
+      }
+      if (!ok) {
+        e.preventDefault();
+        if (alertBox) alertBox.classList.add('show');
+        if (alertSpan) {
+          var msgs = {
+            agent:   'Agent ID must be exactly 5 alphanumeric characters (e.g. AX123)',
+            doctor:  'Doctor ID must be exactly 4 alphanumeric characters (e.g. DR24)',
+            patient: 'Enter a valid Patient ID (6 alphanumeric) OR 10-digit phone number'
+          };
+          alertSpan.textContent = msgs[currentRole] || 'Invalid ID format.';
+        }
+        if (userIdInput) {
+          userIdInput.classList.add('shake');
+          setTimeout(function(){ userIdInput.classList.remove('shake'); }, 400);
+        }
+        return;
+      }
+    });
+  }
+
+  // ── INIT ──
+  setActiveRole('agent');
+
+  // nothing needed here
+
+})();
+</script>
+</body>
+</html>

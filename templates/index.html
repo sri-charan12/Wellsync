@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WellSync- Free Digital Healthcare</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #2563eb;
+      --secondary-color: #1e40af;
+      --accent-color: #3b82f6;
+      --text-dark: #1e293b;
+      --text-light: #f8fafc;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      color: var(--text-dark);
+      line-height: 1.6;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 5%;
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .logo img {
+      height: 40px;
+      width: auto;
+    }
+
+    nav {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: var(--text-dark);
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+      padding: 0.5rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    nav a i {
+      color: var(--primary-color);
+      font-size: 0.9rem;
+    }
+
+    nav a:hover {
+      color: var(--primary-color);
+    }
+
+    nav a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: var(--primary-color);
+      transition: width 0.3s ease;
+    }
+
+    nav a:hover::after {
+      width: 100%;
+    }
+
+    .hero {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 4rem;
+      padding: 4rem 5%;
+      background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+      min-height: 60vh;
+    }
+
+    .hero-text {
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 1rem;
+      max-width: 500px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      backdrop-filter: blur(10px);
+      color: var(--text-dark);
+    }
+
+    .hero-text h1 {
+      font-size: 2.5rem;
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .hero-text p {
+      font-size: 1.2rem;
+      text-align: center;
+      line-height: 1.8;
+    }
+
+    /* Free Forever Banner - NEW */
+    .free-banner {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      font-size: 1.3rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .free-banner i {
+      font-size: 2rem;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .free-badge {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 0.3rem 1rem;
+      border-radius: 50px;
+      font-size: 1rem;
+      margin-left: 0.5rem;
+    }
+
+    /* Startup Intro Section */
+    .startup-intro {
+      padding: 4rem 5%;
+      background: white;
+      text-align: center;
+    }
+
+    .startup-intro h2 {
+      font-size: 2.2rem;
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+    }
+
+    .startup-intro p {
+      max-width: 800px;
+      margin: 0 auto 2rem;
+      color: #64748b;
+      font-size: 1.1rem;
+    }
+
+    .launch-badge {
+      display: inline-block;
+      background: #e6f0ff;
+      color: var(--primary-color);
+      font-weight: 600;
+      padding: 0.8rem 2rem;
+      border-radius: 50px;
+      font-size: 1.2rem;
+      border: 2px solid var(--primary-color);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    /* Vision Section */
+    .vision-section {
+      padding: 4rem 5%;
+      background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%);
+    }
+
+    .vision-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .vision-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s ease;
+      border: 1px solid #e2e8f0;
+    }
+
+    .vision-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--primary-color);
+    }
+
+    .vision-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #e6f0ff 0%, #d4e4ff 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+    }
+
+    .vision-icon i {
+      font-size: 2.5rem;
+      color: var(--primary-color);
+    }
+
+    .vision-card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      color: var(--text-dark);
+    }
+
+    .vision-card p {
+      color: #64748b;
+      line-height: 1.6;
+    }
+
+    /* Timeline Steps */
+    .timeline-steps {
+      padding: 4rem 5%;
+      background: #f8fafc;
+    }
+
+    .timeline-heading {
+      text-align: center;
+      font-size: 2.5rem;
+      color: var(--primary-color);
+      margin-bottom: 1rem;
+    }
+
+    .timeline-subheading {
+      text-align: center;
+      color: #64748b;
+      font-size: 1.1rem;
+      margin-bottom: 3rem;
+    }
+
+    .timeline {
+      position: relative;
+      max-width: 1200px;
+      margin: 3rem auto 0;
+    }
+
+    .timeline::after {
+      content: '';
+      position: absolute;
+      width: 6px;
+      background: var(--primary-color);
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      margin-left: -3px;
+      border-radius: 10px;
+    }
+
+    .step {
+      padding: 20px 40px;
+      position: relative;
+      background: white;
+      width: 50%;
+      margin: 40px 0;
+    }
+
+    .step:nth-child(odd) {
+      left: 0;
+      text-align: right;
+    }
+
+    .step:nth-child(even) {
+      left: 50%;
+    }
+
+    .step-image {
+      width: 200px;
+      height: 150px;
+      background: #e8f4ff;
+      border-radius: 10px;
+      margin: 10px 0;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .step-content {
+      position: relative;
+      border-radius: 1rem;
+      padding: 20px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      background: white;
+    }
+
+    .step-number {
+      width: 40px;
+      height: 40px;
+      background: var(--primary-color);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      top: -20px;
+      z-index: 1;
+      font-weight: bold;
+    }
+
+    .step:nth-child(odd) .step-number {
+      right: -20px;
+    }
+
+    .step:nth-child(even) .step-number {
+      left: -20px;
+    }
+
+    .step-content h3 {
+      color: var(--primary-color);
+      margin-bottom: 0.5rem;
+    }
+
+    .step-content p {
+      color: #64748b;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Features Flip Cards */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      padding: 4rem 5%;
+      background: #f8fafc;
+    }
+
+    .flip-card {
+      background-color: transparent;
+      width: 100%;
+      height: 254px;
+      perspective: 1000px;
+      font-family: sans-serif;
+    }
+
+    .title {
+      font-size: 1.5em;
+      font-weight: 900;
+      text-align: center;
+      margin: 0;
+    }
+
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.8s;
+      transform-style: preserve-3d;
+    }
+
+    .flip-card:hover .flip-card-inner {
+      transform: rotateY(180deg);
+    }
+
+    .flip-card-front, .flip-card-back {
+      box-shadow: 0 8px 14px 0 rgba(0,0,0,0.2);
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      border: 1px solid coral;
+      border-radius: 1rem;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .flip-card-front {
+      background: linear-gradient(120deg, rgb(125, 155, 255)0%, rgb(64, 231, 243) 88%,
+         rgb(64, 67, 240) 40%, rgba(164, 199, 250, 0.603) 48%);
+      color: rgb(0, 0, 0);
+    }
+
+    .flip-card-back {
+      background: linear-gradient(120deg, rgb(145, 169, 255) 30%, rgb(153, 80, 255) 88%,
+         rgb(196, 218, 255) 40%, rgb(39, 193, 207) 78%);
+      color: rgb(0, 0, 0);
+      transform: rotateY(180deg);
+    }
+
+    /* FAQ Section */
+    .faq-section {
+      padding: 4rem 5%;
+      background: white;
+    }
+
+    .faq-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 1.5rem;
+      max-width: 1200px;
+      margin: 2rem auto 0;
+    }
+
+    .faq-item {
+      background: #f8fafc;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      border: 1px solid #e2e8f0;
+      transition: all 0.3s ease;
+    }
+
+    .faq-item:hover {
+      transform: translateX(5px);
+      border-color: var(--primary-color);
+    }
+
+    .faq-question {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .faq-question i {
+      color: var(--primary-color);
+      font-size: 1.2rem;
+    }
+
+    .faq-question h3 {
+      font-size: 1.1rem;
+      color: var(--text-dark);
+    }
+
+    .faq-item p {
+      color: #64748b;
+      margin-left: 2.2rem;
+      font-size: 0.95rem;
+    }
+
+
+
+    /* CTA Section */
+    .cta-section {
+      padding: 5rem 5%;
+      background: white;
+      text-align: center;
+    }
+
+    .cta-content {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .cta-content h2 {
+      font-size: 2.5rem;
+      color: var(--primary-color);
+      margin-bottom: 1.5rem;
+    }
+
+    .cta-content p {
+      font-size: 1.2rem;
+      color: #64748b;
+      margin-bottom: 2rem;
+    }
+
+    .cta-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .cta-button {
+      padding: 1rem 2rem;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .cta-button.primary {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .cta-button.primary:hover {
+      background: var(--secondary-color);
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .cta-button.secondary {
+      background: transparent;
+      color: var(--primary-color);
+      border: 2px solid var(--primary-color);
+    }
+
+    .cta-button.secondary:hover {
+      background: var(--primary-color);
+      color: white;
+      transform: translateY(-3px);
+    }
+
+    footer {
+      text-align: center;
+      padding: 3rem 5%;
+      background: #f0f8ff;
+      color: #0077cc;
+      border-top: 1px solid #ccc;
+    }
+
+    footer a {
+      color: #0077cc;
+      text-decoration: none;
+      margin: 0 5px;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+      .hero {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      nav {
+        display: none;
+      }
+
+      .timeline::after {
+        left: 31px;
+      }
+
+      .step {
+        width: 100%;
+        left: 0 !important;
+        padding-left: 70px;
+        padding-right: 25px;
+        text-align: left !important;
+      }
+
+      .step:nth-child(even) .step-number,
+      .step:nth-child(odd) .step-number {
+        left: 15px;
+        right: auto;
+      }
+
+      .cta-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .cta-button {
+        width: 100%;
+        max-width: 300px;
+      }
+
+      .faq-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .free-banner {
+        font-size: 1rem;
+        padding: 0.8rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Free Forever Banner - NEW -->
+  <div class="free-banner">
+    <i class="fas fa-gift"></i>
+    <span>🚀 WellSync is 100% FREE forever! No credit card required.</span>
+    <span class="free-badge">Always free</span>
+    <i class="fas fa-heart"></i>
+  </div>
+
+  <!-- Header with all signin options -->
+  <header>
+    <div class="logo">
+      <img src="/static/images/logo.jpg" alt="WellSync Logo"> WellSync
+    </div>
+    <nav>
+  <a href="{{ url_for('auth.login') }}">
+    <i class="fas fa-sign-in-alt"></i> Login
+  </a>
+
+  <a href="{{ url_for('auth.patient_signup') }}">
+    <i class="fas fa-user-plus"></i> Patient Signup
+  </a>
+
+  <a href="{{ url_for('auth.doctor_signup') }}">
+    <i class="fas fa-stethoscope"></i> Doctor Signup
+  </a>
+
+  <a href="{{ url_for('auth.agent_signup') }}">
+    <i class="fas fa-user-tie"></i> Agent Signup
+  </a>
+</nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-text">
+      <h1>Welcome to WellSync</h1>
+      <p>Your Health, Our Priority</p>
+      <p>"We blend reminders with compassionate care to keep your health on track."</p>
+    </div>
+  </section>
+
+  <!-- Startup Intro Section -->
+  <section class="startup-intro">
+    <h2>🚀 Completely Free Healthcare Platform</h2>
+    <p>WellSync is a fresh, innovative healthcare platform built from the ground up to transform how you manage your health. And the best part? <strong>It's 100% free for everyone - patients, doctors, and agents!</strong></p>
+    <div class="launch-badge">
+      <i class="fas fa-rocket"></i> No subscriptions. No hidden fees. Forever free.
+    </div>
+  </section>
+
+  <!-- Vision Section -->
+  <section class="vision-section">
+    <h2 class="timeline-heading">Our Vision</h2>
+    <p class="timeline-subheading">Building the future of free healthcare management</p>
+    <div class="vision-grid">
+      <div class="vision-card">
+        <div class="vision-icon">
+          <i class="fas fa-heart"></i>
+        </div>
+        <h3>Patient-First Approach</h3>
+        <p>We put patients at the center of everything we do, ensuring easy access to health records - all at no cost.</p>
+      </div>
+      <div class="vision-card">
+        <div class="vision-icon">
+          <i class="fas fa-shield-alt"></i>
+        </div>
+        <h3>Security First</h3>
+        <p>Built with enterprise-grade security to protect your sensitive medical data from day one. Free doesn't mean compromising on safety.</p>
+      </div>
+      <div class="vision-card">
+        <div class="vision-icon">
+          <i class="fas fa-robot"></i>
+        </div>
+        <h3>Smart Health Reminders</h3>
+<p>Stay on track with timely notifications for medicines — helping you maintain a healthy routine.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Timeline Steps -->
+  <section class="timeline-steps">
+    <h2 class="timeline-heading">How WellSync Works</h2>
+    <p class="timeline-subheading">7 simple steps to better health management - all free</p>
+    <div class="timeline">
+      
+      <!-- Step 1 -->
+      <div class="step">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h3>👤 FREE USER REGISTRATION</h3>
+          <p>Create your account completely free to start managing your health records. Patients, doctors, and agents sign up with basic details like name, email, phone, and role selection.</p>
+          <div class="step-image" style="background-image: url('/static/images/1.jpeg')"></div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="step">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h3>🔐 SECURE ROLE-BASED LOGIN</h3>
+          <p>Protected access for patients, doctors, and agents with encrypted authentication. Users log in securely to access or upload health records and prescriptions.</p>
+          <div class="step-image" style="background-image: url('/static/images/2.jpeg')"></div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="step">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h3>📋 STRUCTURED HEALTH RECORD MANAGEMENT</h3>
+<p>Medical information is securely recorded by agents in a structured format, making it easy to access, update, and manage patient records anytime.</p>
+          <div class="step-image" style="background-image: url('/static/images/3.jpeg')"></div>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="step">
+        <div class="step-number">4</div>
+        <div class="step-content">
+          <h3>📊 DOCTOR ANALYTICS DASHBOARD</h3>
+<p>Doctors can view patient statistics. through a dedicated analytics section, helping them monitor performance and improve patient care effectively.</p>
+          <div class="step-image" style="background-image: url('/static/images/4.jpeg')"></div>
+        </div>
+      </div>
+
+      <!-- Step 5 -->
+      <div class="step">
+        <div class="step-number">5</div>
+        <div class="step-content">
+          <h3>🔎 INSTANT RECORD ACCESS VIA UNIQUE ID</h3>
+          <p>Retrieve prescriptions and medical records easily using your secure patient ID. Patients, doctors, or agents can enter the patient ID to view all related reports and prescriptions instantly.</p>
+          <div class="step-image" style="background-image: url('/static/images/5.jpeg')"></div>
+        </div>
+      </div>
+
+      <!-- Step 6 -->
+      <div class="step">
+        <div class="step-number">6</div>
+        <div class="step-content">
+        <h3>📅 TREATMENT TRACKING SUPPORT</h3>
+<p>Stay organized with clearly structured medicine timings aligned with your prescribed treatment plan for better health management.</p>
+          <div class="step-image" style="background-image: url('/static/images/6.jpeg')"></div>
+        </div>
+      </div>
+
+      <!-- Step 7 -->
+      <div class="step">
+        <div class="step-number">7</div>
+        <div class="step-content">
+        <h3>📲 HEALTH ALERT NOTIFICATIONS</h3>
+<p>Stay on track with scheduled reminders for medications, ensuring you never miss an important part of your treatment plan.</p>
+          <div class="step-image" style="background-image: url('/static/images/7.jpeg')"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Flip Cards -->
+  <section class="features">
+    <div class="flip-card">
+      <div class="flip-card-inner">
+        <div class="flip-card-front" style="background-image: url('/static/images/hd.jpg')">
+          <p class="title">Heart Problem</p>
+        </div>
+        <div class="flip-card-back" style="background-image: url('/static/images/hdt.jpg')">
+          <p class="title">Free Treatment Plans</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="flip-card">
+      <div class="flip-card-inner">
+        <div class="flip-card-front" style="background-image: url('/static/images/bp.jpg')">
+          <p class="title">BP</p>
+        </div>
+        <div class="flip-card-back" style="background-image: url('/static/images/bpt.jpg')">
+          <p class="title">Free Monitoring</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="flip-card">
+      <div class="flip-card-inner">
+        <div class="flip-card-front" style="background-image: url('/static/images/diabaties.jpg')">
+          <p class="title">Diabetes</p>
+        </div>
+        <div class="flip-card-back" style="background-image: url('/static/images/dt.jpg')">
+          <p class="title">Free Diet Plans</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="flip-card">
+      <div class="flip-card-inner">
+        <div class="flip-card-front" style="background-image: url('/static/images/fever.jpg')">
+          <p class="title">Fever</p>
+        </div>
+        <div class="flip-card-back" style="background-image: url('/static/images/fp.jpg')">
+          <p class="title">Free Reminders</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="faq-section">
+    <h2 class="timeline-heading">Frequently Asked Questions</h2>
+    <p class="timeline-subheading">Everything you need to know about WellSync (it's all free!)</p>
+    <div class="faq-grid">
+      <div class="faq-item">
+        <div class="faq-question">
+          <i class="fas fa-question-circle"></i>
+          <h3>Is WellSync really free?</h3>
+        </div>
+        <p>Yes! WellSync is 100% completely free forever. No credit card required, no hidden fees, no subscriptions. We're building a free healthcare platform for everyone.</p>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">
+          <i class="fas fa-question-circle"></i>
+          <h3>How secure is my medical data?</h3>
+        </div>
+        <p>We use enterprise-grade encryption to protect your data. Your health information is private and secure with us - completely free of charge.</p>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">
+          <i class="fas fa-question-circle"></i>
+          <h3>Can doctors join for free?</h3>
+        </div>
+        <p>Absolutely! Doctors can register for free and start managing patient prescriptions immediately. No fees, no subscriptions.</p>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question">
+          <i class="fas fa-question-circle"></i>
+          <h3>Will it always be free?</h3>
+        </div>
+        <p>Yes! We are committed to keeping WellSync free forever. Our mission is to make healthcare accessible to everyone.</p>
+      </div>
+    </div>
+  </section>
+
+ 
+  
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="cta-content">
+      <h2>Join WellSync Today - It's Free!</h2>
+      <p>Start your free healthcare journey now. No credit card, no commitments, just better health management.</p>
+      <div class="cta-buttons">
+        <a href="{{ url_for('auth.patient_signup') }}" class="cta-button primary"><i class="fas fa-user-plus"></i> Register Free</a>
+        <a href="{{ url_for('auth.login') }}" class="cta-button secondary"><i class="fas fa-sign-in-alt"></i> Free Login</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div style="margin-bottom: 15px;">
+      <strong>Contact:</strong> support@WellSync.com | (800) 555-WellSync    
+    </div>
+
+    <div style="margin-bottom: 15px;">
+      <strong>Quick Links:</strong> |
+      <a href="{{ url_for('auth.login') }}">Free Login</a> |
+      <a href="{{ url_for('auth.patient_signup') }}">Free Patient Signup</a> |
+      <a href="{{ url_for('auth.doctor_signup') }}">Free Doctor Signup</a> |
+      <a href="{{ url_for('auth.agent_signup') }}">Free Agent Signup</a>
+    </div>
+
+    <div style="margin-bottom: 15px;">
+      <strong>Features:</strong> 
+      Free Secure Storage | Free Smart Reminders | Free Access by ID
+    </div>
+
+    <div style="margin-bottom: 15px;">
+      <strong>Follow Us:</strong>
+      <a href="#"><i class="fab fa-facebook"></i> Facebook</a> |
+      <a href="#"><i class="fab fa-twitter"></i> Twitter</a> |
+      <a href="#"><i class="fab fa-linkedin"></i> LinkedIn</a>
+    </div>
+
+    <div>
+      © 2025 WellSync. <strong>100% Free Forever.</strong> Healthcare for everyone, at no cost.
+    </div>
+  </footer>
+
+  <script>
+    // Smooth scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+          behavior: 'smooth'
+        });
+      });
+    });
+  </script>
+</body>
+</html>

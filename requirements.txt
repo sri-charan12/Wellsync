@@ -1,0 +1,7 @@
+flask
+pymongo
+python-dotenv
+bcrypt
+twilio
+schedule
+gunicorn

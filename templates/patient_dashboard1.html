@@ -1,0 +1,1961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Dashboard - MedCare</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --primary-color: #2563eb;
+      --secondary-color: #1e40af;
+      --accent-color: #3b82f6;
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --danger-color: #ef4444;
+      --text-dark: #1e293b;
+      --text-light: #f8fafc;
+      --bg-gray: #f1f5f9;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg-gray);
+      color: var(--text-dark);
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 5%;
+      background: white;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .logo img {
+      height: 40px;
+      width: auto;
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      cursor: pointer;
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      transition: background 0.3s ease;
+    }
+
+    .user-profile:hover {
+      background: var(--bg-gray);
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+
+    .user-info {
+      text-align: right;
+    }
+
+    .user-name {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .user-role {
+      font-size: 0.8rem;
+      color: #64748b;
+    }
+
+    /* Logout button in header */
+    .header-logout {
+      background: var(--danger-color);
+      color: white;
+      border: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 30px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .header-logout:hover {
+      background: #dc2626;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(220, 38, 38, 0.2);
+    }
+
+    .header-logout i {
+      font-size: 1rem;
+    }
+
+    /* Dashboard Layout */
+    .dashboard-container {
+      display: flex;
+      min-height: calc(100vh - 70px);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: white;
+      padding: 2rem 1.5rem;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .patient-id-card {
+      background: linear-gradient(135deg, #2563eb, #1e40af);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      color: white;
+    }
+
+    .patient-id-card h3 {
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+      opacity: 0.9;
+    }
+
+    .patient-id-number {
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      margin-bottom: 0.5rem;
+    }
+
+    .patient-id-card p {
+      font-size: 0.8rem;
+      opacity: 0.8;
+    }
+
+    .nav-menu {
+      list-style: none;
+    }
+
+    .nav-item {
+      margin-bottom: 0.5rem;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      color: var(--text-dark);
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+      font-size: 1rem;
+      font-family: inherit;
+    }
+
+    .nav-link i {
+      width: 24px;
+      color: var(--primary-color);
+    }
+
+    .nav-link:hover {
+      background: var(--bg-gray);
+    }
+
+    .nav-link.active {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .nav-link.active i {
+      color: white;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: 2rem;
+      overflow-y: auto;
+    }
+
+    /* Section views - only active one is displayed */
+    .view-section {
+      display: none;
+    }
+
+    .view-section.active-section {
+      display: block;
+    }
+
+    /* Welcome Section (Dashboard) */
+    .welcome-section {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      border-radius: 1.5rem;
+      padding: 2rem;
+      color: white;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .welcome-text h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .welcome-text p {
+      opacity: 0.9;
+    }
+
+    .date-badge {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 0.8rem 1.5rem;
+      border-radius: 50px;
+      font-size: 1rem;
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .stat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .stat-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #2563eb10, #1e40af10);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .stat-icon i {
+      font-size: 1.5rem;
+      color: var(--primary-color);
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .stat-label {
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    /* Section Headers */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-header h2 {
+      font-size: 1.3rem;
+      color: var(--text-dark);
+    }
+
+    .view-all {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    /* Medical Records Grid */
+    .records-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .record-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s ease;
+      border-left: 4px solid var(--primary-color);
+    }
+
+    .record-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .record-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .record-icon {
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #2563eb10, #1e40af10);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .record-icon i {
+      font-size: 1.5rem;
+      color: var(--primary-color);
+    }
+
+    .record-date {
+      font-size: 0.85rem;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    .record-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .record-doctor {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .record-doctor i {
+      color: var(--primary-color);
+      font-size: 0.8rem;
+    }
+
+    .record-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .record-link {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+
+    .record-type {
+      background: #e2e8f0;
+      padding: 0.2rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      color: var(--text-dark);
+    }
+
+    /* Prescriptions Grid */
+    .prescriptions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .prescription-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s ease;
+      border: 1px solid #e2e8f0;
+    }
+
+    .prescription-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+    }
+
+    .prescription-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .prescription-medicine {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .prescription-dosage {
+      background: var(--primary-color);
+      color: white;
+      padding: 0.3rem 1rem;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .prescription-details {
+      margin-bottom: 1.5rem;
+      background: var(--bg-gray);
+      padding: 1rem;
+      border-radius: 0.75rem;
+    }
+
+    .prescription-detail-item {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      padding: 0.5rem 0;
+      color: var(--text-dark);
+      font-size: 1rem;
+      border-bottom: 1px dashed #cbd5e1;
+    }
+    .prescription-detail-item:last-child {
+      border-bottom: none;
+    }
+
+    .prescription-detail-item i {
+      width: 22px;
+      color: var(--primary-color);
+      font-size: 1.1rem;
+    }
+
+    .prescription-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 2px solid #e2e8f0;
+    }
+
+    .prescription-refill {
+      color: var(--success-color);
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      background: #e6f7ee;
+      padding: 0.5rem 1rem;
+      border-radius: 30px;
+      transition: background 0.2s;
+    }
+    .prescription-refill i {
+      margin-right: 0.5rem;
+    }
+    .prescription-refill:hover {
+      background: #d1f0e3;
+    }
+
+    .prescription-status {
+      font-size: 0.9rem;
+      padding: 0.4rem 1.2rem;
+      border-radius: 30px;
+      font-weight: 600;
+    }
+
+    .status-active {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-expiring {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    /* Settings Section - with section edit buttons */
+    .settings-section {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .settings-section h2 {
+      font-size: 1.5rem;
+      color: var(--text-dark);
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--bg-gray);
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2.5rem;
+    }
+
+    .settings-group {
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .settings-group h3 {
+      font-size: 1.1rem;
+      color: var(--text-dark);
+      margin-bottom: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .edit-section-btn {
+      background: transparent;
+      color: var(--primary-color);
+      border: 1px solid var(--primary-color);
+      padding: 0.3rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .edit-section-btn:hover {
+      background: var(--primary-color);
+      color: white;
+    }
+
+    .edit-section-btn i {
+      font-size: 0.8rem;
+    }
+
+    /* Personal Information fields - left column */
+    .info-row {
+      display: flex;
+      margin-bottom: 0.8rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px solid #e2e8f0;
+      align-items: center;
+    }
+
+    .info-row:last-child {
+      border-bottom: none;
+    }
+
+    .info-label {
+      width: 140px;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    .info-value {
+      flex: 1;
+      color: var(--text-dark);
+      padding: 0.5rem;
+      background-color: #ffffff;
+      border: 1px solid #d1d9e6;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      min-height: 2.5rem;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .info-value[contenteditable="true"] {
+      background-color: #f0f7ff;
+      border: 2px solid var(--primary-color);
+      outline: none;
+    }
+
+    /* Medical Information fields - left column */
+    .medical-row {
+      display: flex;
+      margin-bottom: 0.8rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px solid #e2e8f0;
+      align-items: flex-start;
+    }
+
+    .medical-label {
+      width: 140px;
+      color: #64748b;
+      font-weight: 500;
+      padding-top: 0.5rem;
+    }
+
+    .medical-value {
+      flex: 1;
+      color: var(--text-dark);
+      padding: 0.5rem;
+      background-color: #ffffff;
+      border: 1px solid #d1d9e6;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      min-height: 2.5rem;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .medical-value[contenteditable="true"] {
+      background-color: #f0f7ff;
+      border: 2px solid var(--primary-color);
+      outline: none;
+    }
+
+    /* Reminder Preferences - right column */
+    .reminder-row {
+      display: flex;
+      margin-bottom: 0.8rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px solid #e2e8f0;
+      align-items: center;
+    }
+
+    .reminder-label {
+      width: 140px;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    .reminder-value {
+      flex: 1;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      background-color: #ffffff;
+      border: 1px solid #d1d9e6;
+      border-radius: 6px;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .reminder-value i {
+      color: var(--success-color);
+      font-size: 1.1rem;
+    }
+
+    .reminder-status {
+      color: var(--text-dark);
+    }
+
+    /* Password fields - right column */
+    .password-row {
+      display: flex;
+      margin-bottom: 1.2rem;
+      align-items: center;
+    }
+
+    .password-label {
+      width: 140px;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    .password-input-wrapper {
+      flex: 1;
+    }
+
+    .password-input-wrapper input {
+      width: 100%;
+      padding: 0.6rem 0.8rem;
+      border: 1px solid #d1d9e6;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      background-color: #ffffff;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+      transition: all 0.2s ease;
+    }
+
+    .password-input-wrapper input:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+
+    .password-input-wrapper input[readonly] {
+      background-color: #f1f5f9;
+      border: 1px solid #d1d9e6;
+    }
+
+    .password-input-wrapper input.editable {
+      background-color: #f0f7ff;
+      border: 2px solid var(--primary-color);
+    }
+
+    /* Save button */
+    .save-btn {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 0.8rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 2rem;
+      float: right;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1rem;
+    }
+
+    .save-btn:hover {
+      background: var(--secondary-color);
+    }
+
+    /* Analytics View */
+    .analytics-view {
+      padding: 1rem 0;
+    }
+
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .adherence-card {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      border-left: 4px solid var(--primary-color);
+      text-align: center;
+    }
+
+    .adherence-card h3 {
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+      color: var(--text-dark);
+    }
+
+    .adherence-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--primary-color);
+      margin-bottom: 0.5rem;
+    }
+
+    .adherence-label {
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    .medication-progress {
+      margin-top: 1rem;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 0.5rem 0;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: var(--success-color);
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+
+    .stats-row {
+      display: flex;
+      justify-content: space-between;
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+
+    .chart-container {
+      background: white;
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .chart-container h3 {
+      margin-bottom: 1rem;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .legend {
+      display: flex;
+      gap: 2rem;
+      margin-top: 1rem;
+      justify-content: center;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+    }
+
+    .legend-color {
+      width: 12px;
+      height: 12px;
+      border-radius: 4px;
+    }
+
+    .color-taken { background: #10b981; }
+    .color-missed { background: #ef4444; }
+    .color-skipped { background: #f59e0b; }
+
+    canvas {
+      max-height: 300px;
+      max-width: 100%;
+    }
+
+    /* Modal for success message */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal.active {
+      display: flex;
+    }
+    .modal-content {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .modal-header i {
+      font-size: 3rem;
+      color: var(--success-color);
+    }
+    .modal-body {
+      margin-bottom: 1.5rem;
+    }
+    .modal-body h3 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-dark);
+    }
+    .modal-body p {
+      color: #64748b;
+    }
+    .modal-footer button {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 0.8rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .modal-footer button:hover {
+      background: var(--secondary-color);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .dashboard-container {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        padding: 1rem;
+      }
+
+      .welcome-section {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+      }
+
+      .stats-grid,
+      .records-grid,
+      .prescriptions-grid,
+      .analytics-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .settings-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+
+      .info-row, .medical-row, .reminder-row, .password-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+
+      .info-label, .medical-label, .reminder-label, .password-label {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="logo">
+      <img src="/static/images/logo.jpg" alt="MedCare Logo"> Wellsync
+    </div>
+    <div class="user-menu">
+      <div class="user-profile">
+        <div class="avatar">{{ patient.fullname[:2].upper() if patient.fullname else "PT" }}</div>
+        <div class="user-info">
+          <div class="user-name">{{ patient.fullname }}</div>
+          <div class="user-role">Patient</div>
+        </div>
+        <i class="fas fa-chevron-down" style="font-size: 0.8rem;"></i>
+      </div>
+      <!-- Logout button at top of dashboard -->
+      <a href="{{ url_for('auth.logout') }}" class="header-logout">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </a>
+    </div>
+  </header>
+
+  <!-- Dashboard Container -->
+  <div class="dashboard-container">
+    <!-- Sidebar with clickable nav -->
+    <aside class="sidebar">
+      <div class="patient-id-card">
+        <h3>PATIENT ID</h3>
+        <div class="patient-id-number">{{ patient.patient_id }}</div>
+        <p>Use this ID for quick access to your records</p>
+      </div>
+
+      <ul class="nav-menu">
+        <li class="nav-item">
+          <button class="nav-link active" data-view="dashboard">
+            <i class="fas fa-home"></i> Dashboard
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" data-view="medical-records">
+            <i class="fas fa-file-medical"></i> Medical Records
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" data-view="prescriptions">
+            <i class="fas fa-prescription"></i> Prescriptions
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" data-view="analytics">
+            <i class="fas fa-chart-line"></i> Analytics
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" data-view="doctors-notes">
+            <i class="fas fa-notes-medical"></i> Doctor's Notes
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-link" data-view="settings">
+            <i class="fas fa-gear"></i> Settings
+          </button>
+        </li>
+        <!-- Removed duplicate logout from sidebar -->
+      </ul>
+    </aside>
+
+    <!-- Main Content - contains all sections -->
+    <main class="main-content">
+      <!-- DASHBOARD VIEW -->
+      <div id="dashboard-view" class="view-section active-section">
+        <div class="welcome-section">
+          <div class="welcome-text">
+            <h1>Welcome back, {{ patient.fullname.split()[0] }}! 👋</h1>
+            <p>Here's your health overview</p>
+          </div>
+          <div class="date-badge">
+            <i class="fas fa-calendar"></i> <span id="liveDatePatient"></span>
+          </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon"><i class="fas fa-file-medical"></i></div>
+              <span class="stat-value">{{ total_records }}</span>
+            </div>
+            <div class="stat-label">Total Medical Records</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon"><i class="fas fa-prescription"></i></div>
+              <span class="stat-value">{{ active_prescriptions }}</span>
+            </div>
+            <div class="stat-label">Active Prescriptions</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon"><i class="fas fa-pill"></i></div>
+              <span class="stat-value">{{ adherence_pct }}%</span>
+            </div>
+            <div class="stat-label">Medication Adherence</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-header">
+              <div class="stat-icon"><i class="fas fa-clock"></i></div>
+              <span class="stat-value">{{ next_reminder }}</span>
+            </div>
+            <div class="stat-label">Next Reminder</div>
+          </div>
+        </div>
+
+        <!-- Recent Medical Records preview -->
+        <div class="section-header">
+          <h2>Recent Medical Records</h2>
+          <span class="view-all" data-view="medical-records">View All <i class="fas fa-arrow-right"></i></span>
+        </div>
+        <div class="records-grid" id="recent-records"></div>
+      </div>
+
+      <!-- MEDICAL RECORDS FULL VIEW -->
+      <div id="medical-records-view" class="view-section">
+        <div id="patientMrUploadArea"></div>
+        <div id="patientMrList" style="margin-top:.5rem;"></div>
+      </div>
+
+      <!-- PRESCRIPTIONS VIEW -->
+      <div id="prescriptions-view" class="view-section">
+        <div class="section-header">
+          <h2>Your Medications</h2>
+        </div>
+        <div class="prescriptions-grid" id="all-prescriptions"></div>
+      </div>
+
+      <!-- ANALYTICS VIEW - Medication Usage Focus -->
+      <div id="analytics-view" class="view-section">
+        <div class="analytics-view">
+          <h2 style="margin-bottom: 1.5rem;">Medication Usage Analytics</h2>
+          
+          <!-- Adherence Summary Cards -->
+          <div class="analytics-grid">
+            <div class="adherence-card">
+              <h3><i class="fas fa-check-circle" style="color: #10b981;"></i> Doses Taken</h3>
+              <div class="adherence-value" id="val-taken">{{ taken }}</div>
+              <div class="adherence-label">total logged</div>
+              <div class="medication-progress">
+                <div class="progress-bar"><div class="progress-fill" style="width: {{ adherence_pct }}%"></div></div>
+                <div class="stats-row"><span>{{ adherence_pct }}% of total</span><span>{{ taken }}/{{ taken+missed+skipped }}</span></div>
+              </div>
+            </div>
+            <div class="adherence-card">
+              <h3><i class="fas fa-times-circle" style="color: #ef4444;"></i> Doses Missed</h3>
+              <div class="adherence-value" id="val-missed">{{ missed }}</div>
+              <div class="adherence-label">total logged</div>
+              <div class="medication-progress">
+                <div class="progress-bar"><div class="progress-fill" style="width: {{ (missed/(taken+missed+skipped)*100)|round|int if (taken+missed+skipped) > 0 else 0 }}%; background: #ef4444;"></div></div>
+                <div class="stats-row"><span>{{ (missed/(taken+missed+skipped)*100)|round|int if (taken+missed+skipped) > 0 else 0 }}% of total</span><span>{{ missed }}/{{ taken+missed+skipped }}</span></div>
+              </div>
+            </div>
+            <div class="adherence-card">
+              <h3><i class="fas fa-clock" style="color: #f59e0b;"></i> Doses Skipped</h3>
+              <div class="adherence-value" id="val-skipped">{{ skipped }}</div>
+              <div class="adherence-label">total logged</div>
+              <div class="medication-progress">
+                <div class="progress-bar"><div class="progress-fill" style="width: {{ (skipped/(taken+missed+skipped)*100)|round|int if (taken+missed+skipped) > 0 else 0 }}%; background: #f59e0b;"></div></div>
+                <div class="stats-row"><span>{{ (skipped/(taken+missed+skipped)*100)|round|int if (taken+missed+skipped) > 0 else 0 }}% of total</span><span>{{ skipped }}/{{ taken+missed+skipped }}</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Per-Medicine Intake Counter -->
+          <div style="background:white;border-radius:1rem;padding:1.5rem;margin-bottom:1.5rem;box-shadow:0 2px 8px rgba(0,0,0,.05);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;">
+              <h3 style="margin:0;color:#1e293b;"><i class="fas fa-pills" style="color:#2563eb;margin-right:.5rem;"></i>My Medicine Intake Count</h3>
+              <button onclick="loadMedicineIntake()" style="padding:.4rem 1rem;background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe;border-radius:20px;font-size:.85rem;font-weight:600;cursor:pointer;">
+                <i class="fas fa-sync-alt"></i> Refresh
+              </button>
+            </div>
+            <div id="medicineIntakeList">
+              <p style="color:#64748b;text-align:center;padding:1rem;">
+                <i class="fas fa-spinner fa-spin"></i> Loading...
+              </p>
+            </div>
+          </div>
+
+          <!-- Charts -->
+          <div class="chart-container">
+            <h3><i class="fas fa-chart-pie"></i> Weekly Adherence Breakdown</h3>
+            <canvas id="adherencePieChart"></canvas>
+            <div class="legend">
+              <div class="legend-item"><span class="legend-color color-taken"></span> Taken ({{ taken }})</div>
+              <div class="legend-item"><span class="legend-color color-missed"></span> Missed ({{ missed }})</div>
+              <div class="legend-item"><span class="legend-color color-skipped"></span> Skipped ({{ skipped }})</div>
+            </div>
+          </div>
+
+          <div class="chart-container">
+            <h3><i class="fas fa-chart-bar"></i> Daily Medication Adherence</h3>
+            <canvas id="dailyAdherenceChart"></canvas>
+          </div>
+
+          <div class="chart-container">
+            <h3><i class="fas fa-chart-line"></i> Weekly Comparison</h3>
+            <canvas id="weeklyComparisonChart"></canvas>
+          </div>
+
+          <div class="chart-container">
+            <h3><i class="fas fa-pills"></i> Medication-wise Adherence</h3>
+            <canvas id="medicationChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- DOCTOR'S NOTES VIEW -->
+      <div id="doctors-notes-view" class="view-section">
+        <div class="section-header">
+          <h2><i class="fas fa-notes-medical" style="color:#2563eb;margin-right:.5rem;"></i>Doctor's Notes</h2>
+        </div>
+        <div id="doctors-notes-list" style="margin-top:1rem;">
+          <p style="color:#94a3b8;font-size:.9rem;font-style:italic;">Loading notes...</p>
+        </div>
+      </div>
+
+      <!-- SETTINGS VIEW - with section edit buttons -->
+      <div id="settings-view" class="view-section">
+        <div class="settings-section">
+          <h2>Patient Settings</h2>
+
+          <!-- REMINDER SETTINGS CARD -->
+          <div style="background:white;border-radius:1rem;padding:1.5rem;margin-bottom:1.5rem;border:1px solid #e2e8f0;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;">
+              <h3 style="margin:0;color:#1e293b;font-size:1rem;">
+                <i class="fas fa-bell" style="color:#2563eb;margin-right:.5rem;"></i>
+                Medication Reminders
+              </h3>
+              <label style="display:flex;align-items:center;gap:.5rem;cursor:pointer;">
+                <span style="font-size:.85rem;color:#64748b;">Enable Reminders</span>
+                <div style="position:relative;width:44px;height:24px;">
+                  <input type="checkbox" id="remindersEnabled" onchange="toggleReminderOptions()"
+                    style="opacity:0;width:100%;height:100%;position:absolute;cursor:pointer;z-index:2;margin:0;">
+                  <div id="reminderToggleBg" style="width:44px;height:24px;background:#cbd5e1;border-radius:12px;transition:background .2s;"></div>
+                  <div id="reminderToggleThumb" style="position:absolute;top:2px;left:2px;width:20px;height:20px;background:white;border-radius:50%;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2);"></div>
+                </div>
+              </label>
+            </div>
+
+            <div id="reminderOptions" style="display:none;">
+              <!-- Channel selection -->
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem;">
+                <label style="display:flex;align-items:center;gap:.8rem;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:.75rem;padding:1rem;cursor:pointer;">
+                  <input type="checkbox" id="smsEnabled" style="width:18px;height:18px;accent-color:#10b981;">
+                  <div>
+                    <div style="font-weight:700;color:#065f46;"><i class="fas fa-sms"></i> SMS</div>
+                    <div style="font-size:.78rem;color:#64748b;">Text message to your phone</div>
+                  </div>
+                </label>
+                <label style="display:flex;align-items:center;gap:.8rem;background:#f0fdf9;border:1px solid #99f6e4;border-radius:.75rem;padding:1rem;cursor:pointer;">
+                  <input type="checkbox" id="waEnabled" style="width:18px;height:18px;accent-color:#10b981;">
+                  <div>
+                    <div style="font-weight:700;color:#065f46;"><i class="fab fa-whatsapp"></i> WhatsApp</div>
+                    <div style="font-size:.78rem;color:#64748b;">WhatsApp message</div>
+                  </div>
+                </label>
+              </div>
+
+              <!-- Phone number -->
+              <div style="margin-bottom:1rem;">
+                <label style="display:block;font-size:.85rem;font-weight:600;color:#475569;margin-bottom:.3rem;">
+                  <i class="fas fa-phone"></i> Phone Number (with country code)
+                </label>
+                <input type="tel" id="reminderPhone" placeholder="+91 9876543210"
+                  style="width:100%;padding:.7rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:.95rem;">
+              </div>
+
+              <!-- Reminder times -->
+              <div style="margin-bottom:1.2rem;">
+                <label style="display:block;font-size:.85rem;font-weight:600;color:#475569;margin-bottom:.6rem;">
+                  <i class="fas fa-clock"></i> Remind me at
+                </label>
+                <div style="display:flex;flex-wrap:wrap;gap:.6rem;">
+                  <label style="display:flex;align-items:center;gap:.4rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:.4rem .8rem;cursor:pointer;">
+                    <input type="checkbox" class="time-check" value="Morning" checked style="accent-color:#2563eb;">
+                    <span style="font-size:.88rem;">🌅 Morning (8 AM)</span>
+                  </label>
+                  <label style="display:flex;align-items:center;gap:.4rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:.4rem .8rem;cursor:pointer;">
+                    <input type="checkbox" class="time-check" value="Afternoon" style="accent-color:#2563eb;">
+                    <span style="font-size:.88rem;">☀️ Afternoon (1 PM)</span>
+                  </label>
+                  <label style="display:flex;align-items:center;gap:.4rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:.4rem .8rem;cursor:pointer;">
+                    <input type="checkbox" class="time-check" value="Evening" checked style="accent-color:#2563eb;">
+                    <span style="font-size:.88rem;">🌆 Evening (6 PM)</span>
+                  </label>
+                  <label style="display:flex;align-items:center;gap:.4rem;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:.4rem .8rem;cursor:pointer;">
+                    <input type="checkbox" class="time-check" value="Night" style="accent-color:#2563eb;">
+                    <span style="font-size:.88rem;">🌙 Night (9 PM)</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Save button -->
+              <button onclick="saveReminderSettings()"
+                style="width:100%;padding:.8rem;background:#2563eb;color:white;border:none;border-radius:8px;font-weight:700;font-size:.95rem;cursor:pointer;">
+                <i class="fas fa-save"></i> Save Reminder Settings
+              </button>
+
+              <!-- Status -->
+              <div id="reminderSaveStatus" style="margin-top:.6rem;font-size:.88rem;text-align:center;display:none;"></div>
+            </div>
+          </div>
+          
+          <div class="settings-grid">
+            <!-- LEFT COLUMN: Personal Information and Medical Information -->
+            <div>
+              <!-- Personal Information with Edit button -->
+              <div class="settings-group" id="personal-info-group">
+                <h3>
+                  Personal Information
+                  <button class="edit-section-btn" onclick="toggleSectionEdit('personal-info')">
+                    <i class="fas fa-edit"></i> Edit
+                  </button>
+                </h3>
+                
+                <div class="info-row">
+                  <div class="info-label">Full Name</div>
+                  <div class="info-value" id="personal-fullname">{{ patient.fullname }}</div>
+                </div>
+                <div class="info-row">
+                  <div class="info-label">Gender</div>
+                  <div class="info-value" id="personal-gender">{{ patient.gender }}</div>
+                </div>
+                <div class="info-row">
+                  <div class="info-label">Blood Group</div>
+                  <div class="info-value" id="personal-blood">{{ patient.bloodgroup }}</div>
+                </div>
+                <div class="info-row">
+                  <div class="info-label">Phone</div>
+                  <div class="info-value" id="personal-phone">{{ patient.phone }}</div>
+                </div>
+                <div class="info-row">
+                  <div class="info-label">Date of Birth</div>
+                  <div class="info-value" id="personal-dob">{{ patient.dob }}</div>
+                </div>
+                <div class="info-row">
+                  <div class="info-label">Email</div>
+                  <div class="info-value" id="personal-email">{{ patient.email }}</div>
+                </div>
+                <div class="info-row">
+                  <div class="info-label">Address</div>
+                  <div class="info-value" id="personal-address">{{ patient.address }}</div>
+                </div>
+              </div>
+
+              <!-- Medical Information with Edit button -->
+              <div class="settings-group" id="medical-info-group">
+                <h3>
+                  Medical Information
+                  <button class="edit-section-btn" onclick="toggleSectionEdit('medical-info')">
+                    <i class="fas fa-edit"></i> Edit
+                  </button>
+                </h3>
+                
+                <div class="medical-row">
+                  <div class="medical-label">Chronic conditions</div>
+                  <div class="medical-value" id="medical-chronic">{{ patient.conditionsDesc or "None" }}</div>
+                </div>
+                <div class="medical-row">
+                  <div class="medical-label">Allergies</div>
+                  <div class="medical-value" id="medical-allergies">{{ patient.allergiesDesc or "None" }}</div>
+                </div>
+                <div class="medical-row">
+                  <div class="medical-label">Current medications</div>
+                  <div class="medical-value" id="medical-medications">{{ patient.medicationsDesc or "None" }}</div>
+                </div>
+                <div class="medical-row">
+                  <div class="medical-label">Past surgeries</div>
+                  <div class="medical-value" id="medical-surgeries">{{ patient.surgeriesDesc or "None" }}</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- RIGHT COLUMN: Reminder Preferences and Change Password -->
+            <div>
+              <!-- Reminder Preferences (static) -->
+              <div class="settings-group">
+                <h3>Reminder Preferences</h3>
+                
+                <div class="reminder-row">
+                  <div class="reminder-label">SMS Reminders</div>
+                  <div class="reminder-value">
+                    <i class="fas fa-check-circle"></i>
+                    <span class="reminder-status">Enabled</span>
+                  </div>
+                </div>
+                <div class="reminder-row">
+                  <div class="reminder-label">WhatsApp Reminders</div>
+                  <div class="reminder-value">
+                    <i class="fas fa-check-circle"></i>
+                    <span class="reminder-status">Enabled</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Change Password with Edit button -->
+              <div class="settings-group" id="password-group">
+                <h3>
+                  Change Password
+                  <button class="edit-section-btn" onclick="toggleSectionEdit('password')">
+                    <i class="fas fa-edit"></i> Edit
+                  </button>
+                </h3>
+                
+                <div class="password-row">
+                  <div class="password-label">Current Password</div>
+                  <div class="password-input-wrapper">
+                    <input type="password" id="password-current" value="password123" readonly>
+                  </div>
+                </div>
+                <div class="password-row">
+                  <div class="password-label">New Password</div>
+                  <div class="password-input-wrapper">
+                    <input type="password" id="password-new" value="" placeholder="Enter new password" readonly>
+                  </div>
+                </div>
+                <div class="password-row">
+                  <div class="password-label">Confirm New Password</div>
+                  <div class="password-input-wrapper">
+                    <input type="password" id="password-confirm" value="" placeholder="Confirm new password" readonly>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Save button -->
+          <div style="clear: both;">
+            <button class="save-btn" id="saveSettingsBtn">
+              Save Changes
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Success Modal -->
+  <div id="successModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <div class="modal-body">
+        <h3>Saved Successfully!</h3>
+        <p>Your changes have been saved.</p>
+      </div>
+      <div class="modal-footer">
+        <button onclick="closeSuccessModal()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── SETTINGS: track edit mode per section ──
+    let editSections = { 'personal-info': false, 'medical-info': false, 'password': false };
+
+    window.toggleSectionEdit = function(section) {
+      editSections[section] = !editSections[section];
+      var on = editSections[section];
+
+      if (section === 'personal-info') {
+        ['personal-fullname','personal-gender','personal-blood','personal-phone','personal-dob','personal-email','personal-address'].forEach(function(id) {
+          var el = document.getElementById(id); if (!el) return;
+          if (on) { el.setAttribute('contenteditable','true'); el.classList.add('editable'); }
+          else    { el.removeAttribute('contenteditable');      el.classList.remove('editable'); }
+        });
+        var btn = document.querySelector('#personal-info-group .edit-section-btn');
+        if (btn) btn.innerHTML = on ? '<i class="fas fa-check"></i> Done' : '<i class="fas fa-edit"></i> Edit';
+      }
+      if (section === 'medical-info') {
+        ['medical-chronic','medical-allergies','medical-medications','medical-surgeries'].forEach(function(id) {
+          var el = document.getElementById(id); if (!el) return;
+          if (on) { el.setAttribute('contenteditable','true'); el.classList.add('editable'); }
+          else    { el.removeAttribute('contenteditable');      el.classList.remove('editable'); }
+        });
+        var btn = document.querySelector('#medical-info-group .edit-section-btn');
+        if (btn) btn.innerHTML = on ? '<i class="fas fa-check"></i> Done' : '<i class="fas fa-edit"></i> Edit';
+      }
+      if (section === 'password') {
+        ['password-current','password-new','password-confirm'].forEach(function(id) {
+          var el = document.getElementById(id); if (!el) return;
+          el.readOnly = !on;
+          if (on) el.classList.add('editable'); else el.classList.remove('editable');
+        });
+        var btn = document.querySelector('#password-group .edit-section-btn');
+        if (btn) btn.innerHTML = on ? '<i class="fas fa-check"></i> Done' : '<i class="fas fa-edit"></i> Edit';
+      }
+    };
+
+    window.showSuccessModal = function() { var m=document.getElementById('successModal'); if(m) m.classList.add('active'); };
+    window.closeSuccessModal = function() { var m=document.getElementById('successModal'); if(m) m.classList.remove('active'); };
+
+    // ── NAVIGATION ──
+    var navLinks = document.querySelectorAll('.nav-link[data-view]');
+    var sections = {
+      'dashboard':       document.getElementById('dashboard-view'),
+      'medical-records': document.getElementById('medical-records-view'),
+      'prescriptions':   document.getElementById('prescriptions-view'),
+      'analytics':       document.getElementById('analytics-view'),
+      'doctors-notes':   document.getElementById('doctors-notes-view'),
+      'settings':        document.getElementById('settings-view')
+    };
+    function setActiveView(viewId) {
+      Object.values(sections).forEach(function(s) { if(s) s.classList.remove('active-section'); });
+      if (sections[viewId]) sections[viewId].classList.add('active-section');
+      navLinks.forEach(function(l) { l.classList.toggle('active', l.dataset.view===viewId); });
+      if (viewId==='analytics') setTimeout(initCharts,100);
+      if (viewId==='doctors-notes') loadDoctorNotes();
+    }
+    navLinks.forEach(function(l) { l.addEventListener('click',function(e){e.preventDefault();setActiveView(l.dataset.view);}); });
+    document.querySelectorAll('.view-all[data-view]').forEach(function(el){ el.addEventListener('click',function(){setActiveView(el.dataset.view);}); });
+
+    // ── PRESCRIPTIONS — grouped: one entry per prescription ──
+    var prescriptions = [
+      {% for rx in prescriptions %}
+      {
+        id:       "{{ rx._id }}",
+        date:     "{{ rx.date }}",
+        status:   "{{ rx.status }}",
+        added_by: "{{ (rx.agent_id or rx.doctor_id or 'N/A') }}",
+        medicines: [
+          {% for m in rx.medicines %}
+          {
+            name:         "{{ m.get('name','') }}",
+            dosage:       "{{ m.get('dosage','') }}",
+            frequency:    "{{ m.get('frequency','') }}",
+            schedule:     "{{ m.get('schedule','') }}",
+            duration:     "{{ m.get('duration','') }}",
+            doctor_id:    "{{ m.get('doctor_id', rx.doctor_id or '') }}",
+            instructions: "{{ m.get('instructions','') }}",
+            before_meal:  {{ 'true' if m.get('before_meal') else 'false' }},
+            after_meal:   {{ 'true' if m.get('after_meal') else 'false' }}
+          },
+          {% endfor %}
+        ]
+      },
+      {% endfor %}
+    ];
+
+    // ── RECORDS — empty state ──
+    var recentRecordsEl = document.getElementById('recent-records');
+    var allRecordsEl    = document.getElementById('all-records');
+    var emptyMsg = '<p style="color:#64748b;padding:1.5rem;text-align:center;"><i class="fas fa-folder-open" style="font-size:2rem;display:block;margin-bottom:.5rem;opacity:.4;"></i>No medical records yet.</p>';
+    if (recentRecordsEl) recentRecordsEl.innerHTML = emptyMsg;
+    if (allRecordsEl)    allRecordsEl.innerHTML    = emptyMsg;
+
+    // ── RENDER PRESCRIPTIONS ──
+    var rxGrid = document.getElementById('all-prescriptions');
+    if (rxGrid) {
+      if (prescriptions.length === 0) {
+        rxGrid.innerHTML = '<div style="text-align:center;padding:2rem;color:#64748b;"><i class="fas fa-prescription-bottle" style="font-size:2.5rem;display:block;margin-bottom:.8rem;opacity:.3;"></i>No prescriptions yet.<br>Your doctor or agent will add them.</div>';
+      } else {
+        rxGrid.style.display = 'block';
+        rxGrid.innerHTML = prescriptions.map(function(rx) {
+          var sc = rx.status==='Active' ? 'status-active' : 'status-expiring';
+          var rows = rx.medicines.map(function(m) {
+            var meal = '';
+            if (m.before_meal) meal += '<span style="background:#fef3c7;color:#92400e;padding:.15rem .5rem;border-radius:8px;font-size:.75rem;margin-right:.3rem;">Before</span>';
+            if (m.after_meal)  meal += '<span style="background:#d1fae5;color:#065f46;padding:.15rem .5rem;border-radius:8px;font-size:.75rem;">After</span>';
+            return '<tr style="border-bottom:1px solid #f1f5f9;">'
+              + '<td style="padding:.6rem .8rem;font-weight:600;color:#1e293b;"><i class="fas fa-pill" style="color:#2563eb;margin-right:.4rem;font-size:.8rem;"></i>' + (m.name||'—') + '</td>'
+              + '<td style="padding:.6rem .8rem;color:#475569;">' + (m.dosage||'—') + '</td>'
+              + '<td style="padding:.6rem .8rem;color:#475569;">' + (m.frequency||'—') + '</td>'
+              + '<td style="padding:.6rem .8rem;color:#475569;">' + (m.schedule||'—') + '</td>'
+              + '<td style="padding:.6rem .8rem;color:#475569;">' + (m.duration||'—') + '</td>'
+              + '<td style="padding:.6rem .8rem;">' + (meal||'—') + '</td>'
+              + '<td style="padding:.6rem .8rem;color:#64748b;font-size:.82rem;">' + (m.instructions||'—') + '</td>'
+              + '<td style="padding:.5rem .6rem;white-space:nowrap;">'
+              +   '<button class="log-btn" data-med="' + (m.name||'') + '" data-status="taken" '
+              +     'style="background:#d1fae5;color:#065f46;border:none;padding:.3rem .7rem;border-radius:6px;font-size:.78rem;cursor:pointer;margin-right:.2rem;font-weight:700;">✓ Taken</button>'
+              +   '<button class="log-btn" data-med="' + (m.name||'') + '" data-status="missed" '
+              +     'style="background:#fee2e2;color:#991b1b;border:none;padding:.3rem .7rem;border-radius:6px;font-size:.78rem;cursor:pointer;margin-right:.2rem;font-weight:700;">✗ Missed</button>'
+              +   '<button class="log-btn" data-med="' + (m.name||'') + '" data-status="skipped" '
+              +     'style="background:#fef3c7;color:#92400e;border:none;padding:.3rem .7rem;border-radius:6px;font-size:.78rem;cursor:pointer;font-weight:700;">⊘ Skip</button>'
+              + '</td>'
+              + '</tr>';
+          }).join('');
+          return '<div style="background:white;border-radius:1rem;padding:1.5rem;margin-bottom:1.5rem;border-left:4px solid #2563eb;box-shadow:0 2px 8px rgba(0,0,0,.06);">'
+            + '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem;margin-bottom:1rem;">'
+            +   '<div>'
+            +     '<div style="font-weight:700;font-size:1rem;color:#1e293b;"><i class="fas fa-prescription" style="color:#2563eb;margin-right:.4rem;"></i>' + rx.medicines.length + ' Medicine Prescription</div>'
+            +     '<div style="font-size:.82rem;color:#64748b;margin-top:.3rem;"><i class="fas fa-calendar"></i> ' + rx.date + ' &nbsp;|&nbsp; Added by: ' + rx.added_by + '</div>'
+            +   '</div>'
+            +   '<span class="prescription-status ' + sc + '">' + rx.status + '</span>'
+            + '</div>'
+            + '<div style="overflow-x:auto;border-radius:.5rem;border:1px solid #e2e8f0;">'
+            +   '<table style="width:100%;border-collapse:collapse;font-size:.85rem;">'
+            +     '<thead><tr style="background:#f8fafc;">'
+            +       '<th style="padding:.6rem .8rem;text-align:left;color:#475569;font-weight:600;">Medicine</th>'
+            +       '<th style="padding:.6rem .8rem;text-align:left;color:#475569;font-weight:600;">Dosage</th>'
+            +       '<th style="padding:.6rem .8rem;text-align:left;color:#475569;font-weight:600;">Frequency</th>'
+            +       '<th style="padding:.6rem .8rem;text-align:left;color:#475569;font-weight:600;">Time</th>'
+            +       '<th style="padding:.6rem .8rem;text-align:left;color:#475569;font-weight:600;">Qty</th>'
+            +       '<th style="padding:.6rem .8rem;text-align:left;color:#475569;font-weight:600;">Meal</th>'
+            +       '<th style="padding:.6rem .8rem;text-align:left;color:#475569;font-weight:600;">Instructions</th>'
+            +       '<th style="padding:.6rem .8rem;text-align:left;color:#475569;font-weight:600;">Log Dose</th>'
+            +     '</tr></thead>'
+            +     '<tbody>' + rows + '</tbody>'
+            +   '</table>'
+            + '</div>'
+            + '<div style="margin-top:1rem;display:flex;justify-content:flex-end;">'
+            +   '<span class="prescription-refill" style="cursor:pointer;" onclick="window.doRefill(this)"><i class="fas fa-rotate-left"></i> Request Refill</span>'
+            + '</div></div>';
+        }).join('');
+      }
+    }
+
+    // Dashboard recent summary
+    if (prescriptions.length > 0 && recentRecordsEl) {
+      recentRecordsEl.innerHTML = prescriptions.slice(0,2).map(function(rx) {
+        var sc = rx.status==='Active'?'status-active':'status-expiring';
+        return '<div class="record-card" style="border-left-color:#2563eb;">'
+          + '<div class="record-header"><div class="record-icon"><i class="fas fa-prescription" style="color:#2563eb;"></i></div></div>'
+          + '<h3>' + rx.medicines.length + ' medicine(s)</h3>'
+          + '<div class="record-doctor"><i class="fas fa-calendar"></i> ' + rx.date + '</div>'
+          + '<div class="record-footer"><span class="record-type">Prescription</span><span class="prescription-status ' + sc + '">' + rx.status + '</span></div></div>';
+      }).join('');
+    }
+
+    // ── CHARTS ──
+    var chartsInitialized = false;
+    function initCharts() {
+      if (chartsInitialized) return;
+      chartsInitialized = true;
+      var pieEl = document.getElementById('adherencePieChart');
+      if (pieEl) new Chart(pieEl, { type:'doughnut', data:{ labels:['Taken','Missed','Skipped'], datasets:[{ data:[{{ taken }},{{ missed }},{{ skipped }}], backgroundColor:['#10b981','#ef4444','#f59e0b'], borderWidth:0 }] }, options:{ responsive:true, plugins:{legend:{display:false}} } });
+      var barEl = document.getElementById('dailyAdherenceChart');
+      if (barEl) new Chart(barEl, { type:'bar', data:{ labels:{{ daily_labels|safe }}, datasets:[{ label:'Taken', data:{{ daily_taken|safe }}, backgroundColor:'#10b981' },{ label:'Missed', data:{{ daily_missed|safe }}, backgroundColor:'#ef4444' },{ label:'Skipped', data:{{ daily_skipped|safe }}, backgroundColor:'#f59e0b' }] }, options:{ responsive:true, plugins:{legend:{position:'top'}}, scales:{x:{stacked:true},y:{stacked:true}} } });
+      var weeklyEl = document.getElementById('weeklyComparisonChart');
+      if (weeklyEl) {
+        if ({{ taken+missed+skipped }}===0) { weeklyEl.parentElement.innerHTML='<p style="color:#64748b;text-align:center;padding:2rem;">No adherence data yet.</p>'; }
+        else new Chart(weeklyEl, { type:'line', data:{ labels:{{ daily_labels|safe }}, datasets:[{label:'Taken',data:{{ daily_taken|safe }},borderColor:'#10b981',tension:.4,fill:false},{label:'Missed',data:{{ daily_missed|safe }},borderColor:'#ef4444',tension:.4,fill:false},{label:'Skipped',data:{{ daily_skipped|safe }},borderColor:'#f59e0b',tension:.4,fill:false}] }, options:{responsive:true} });
+      }
+      var medNames = [];
+      prescriptions.forEach(function(rx){ rx.medicines.forEach(function(m){ if(m.name) medNames.push(m.name); }); });
+      var medEl = document.getElementById('medicationChart');
+      if (medEl) {
+        if (medNames.length===0) medEl.parentElement.innerHTML='<p style="color:#64748b;text-align:center;padding:2rem;">No prescriptions yet.</p>';
+        else new Chart(medEl, { type:'bar', data:{ labels:medNames, datasets:[{label:'Taken',data:medNames.map(function(){return 0;}),backgroundColor:'#10b981'},{label:'Missed',data:medNames.map(function(){return 0;}),backgroundColor:'#ef4444'},{label:'Skipped',data:medNames.map(function(){return 0;}),backgroundColor:'#f59e0b'}] }, options:{responsive:true,plugins:{legend:{position:'top'}},scales:{x:{stacked:true},y:{stacked:true}}} });
+      }
+    }
+
+
+    // ── LOG DOSE (patient marks taken/missed/skipped) ──
+    // Event delegation for log buttons - handles data attributes cleanly
+    document.addEventListener('click', function(e) {
+      var btn = e.target.closest('.log-btn');
+      if (!btn) return;
+      var medication = btn.getAttribute('data-med');
+      var status     = btn.getAttribute('data-status');
+      if (!medication || !status) return;
+      window.logDose(medication, status, btn);
+    });
+
+    window.logDose = function(medication, status, btn) {
+      var row = btn.closest('tr');
+      // Disable all 3 buttons in this row
+      var btns = row.querySelectorAll('button');
+      btns.forEach(function(b) { b.disabled = true; b.style.opacity = '.5'; });
+
+      fetch('/api/log_adherence', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          medication: medication,
+          status:     status,
+          date:       new Date().toISOString().slice(0,10),
+          time:       new Date().toTimeString().slice(0,5)
+        })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.success) {
+          var colors = { taken:'#d1fae5', missed:'#fee2e2', skipped:'#fef3c7' };
+          var labels = { taken:'✓ Taken today!', missed:'✗ Missed logged', skipped:'⊘ Skipped' };
+          var td = btn.closest('td');
+          td.innerHTML = '<span style="background:' + colors[status] + ';padding:.3rem .7rem;border-radius:8px;font-size:.8rem;font-weight:600;">' + labels[status] + '</span>';
+        } else {
+          btns.forEach(function(b) { b.disabled = false; b.style.opacity = '1'; });
+          alert('Could not log: ' + (data.error || 'Try again'));
+        }
+      })
+      .catch(function() {
+        btns.forEach(function(b) { b.disabled = false; b.style.opacity = '1'; });
+        alert('Network error. Try again.');
+      });
+    };
+
+
+    // ── MEDICINE INTAKE COUNTER ──
+    window.loadMedicineIntake = function() {
+      var container = document.getElementById('medicineIntakeList');
+      if (!container) return;
+      container.innerHTML = '<p style="color:#64748b;text-align:center;padding:1rem;"><i class="fas fa-spinner fa-spin"></i> Loading...</p>';
+
+      fetch('/api/medicine_intake_history')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (!data.medicines || data.medicines.length === 0) {
+            container.innerHTML = '<div style="text-align:center;padding:1.5rem;color:#64748b;">'
+              + '<i class="fas fa-pills" style="font-size:2rem;display:block;margin-bottom:.5rem;opacity:.3;"></i>'
+              + 'No doses logged yet.<br>'
+              + '<span style="font-size:.85rem;">Go to <strong>Prescriptions</strong> and click ✓ Taken / ✗ Missed / ⊘ Skip after each dose.</span>'
+              + '</div>';
+            return;
+          }
+
+          var html = '';
+          data.medicines.forEach(function(med) {
+            var pct    = med.adherence_pct || 0;
+            var color  = pct >= 80 ? '#10b981' : (pct >= 60 ? '#f59e0b' : '#ef4444');
+            var bgPct  = pct >= 80 ? '#d1fae5' : (pct >= 60 ? '#fef3c7' : '#fee2e2');
+
+            // Build recent history pills
+            var recentHtml = '';
+            if (med.recent_logs && med.recent_logs.length > 0) {
+              var shown = med.recent_logs.slice(0, 7);
+              shown.forEach(function(log) {
+                var dot_color = log.status === 'taken' ? '#10b981' : (log.status === 'missed' ? '#ef4444' : '#f59e0b');
+                var dot_label = log.status === 'taken' ? '✓' : (log.status === 'missed' ? '✗' : '⊘');
+                recentHtml += '<span title="' + log.date + ' ' + log.time + '" '
+                  + 'style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;'
+                  + 'background:' + dot_color + ';color:white;border-radius:50%;font-size:.75rem;'
+                  + 'margin-right:.3rem;font-weight:700;cursor:default;">' + dot_label + '</span>';
+              });
+            }
+
+            html += '<div style="border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;margin-bottom:.8rem;background:#fafafa;">'
+              + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem;flex-wrap:wrap;gap:.5rem;">'
+              +   '<div>'
+              +     '<span style="font-weight:700;color:#1e293b;font-size:.95rem;">'
+              +       '<i class="fas fa-pill" style="color:#2563eb;margin-right:.4rem;font-size:.8rem;"></i>'
+              +       med.medication
+              +     '</span>'
+              +     '<span style="margin-left:.8rem;background:' + bgPct + ';color:' + color + ';'
+              +       'padding:.15rem .6rem;border-radius:20px;font-size:.78rem;font-weight:700;">'
+              +       pct + '% adherence'
+              +     '</span>'
+              +   '</div>'
+              +   '<div style="display:flex;gap:1rem;font-size:.85rem;">'
+              +     '<span style="color:#10b981;font-weight:600;"><i class="fas fa-check-circle"></i> ' + med.taken + ' taken</span>'
+              +     '<span style="color:#ef4444;font-weight:600;"><i class="fas fa-times-circle"></i> ' + med.missed + ' missed</span>'
+              +     '<span style="color:#f59e0b;font-weight:600;"><i class="fas fa-clock"></i> ' + med.skipped + ' skipped</span>'
+              +     '<span style="color:#94a3b8;font-size:.8rem;">/ ' + med.total + ' total</span>'
+              +   '</div>'
+              + '</div>'
+              // Progress bar
+              + '<div style="height:8px;background:#e2e8f0;border-radius:4px;margin-bottom:.6rem;">'
+              +   '<div style="height:100%;width:' + pct + '%;background:' + color + ';border-radius:4px;transition:width .5s;"></div>'
+              + '</div>'
+              // Recent history dots
+              + (recentHtml ? '<div style="margin-top:.4rem;"><span style="font-size:.75rem;color:#94a3b8;margin-right:.4rem;">Recent:</span>' + recentHtml + '</div>' : '')
+              + '</div>';
+          });
+
+          container.innerHTML = html;
+        })
+        .catch(function() {
+          container.innerHTML = '<p style="color:#ef4444;text-align:center;padding:1rem;">Could not load intake history.</p>';
+        });
+    };
+
+    // Auto-load when analytics tab is opened
+    var _baseInitCharts = initCharts;
+    initCharts = function() {
+      _baseInitCharts();
+      loadMedicineIntake();
+    };
+
+
+    // ── REMINDER SETTINGS ──
+    window.toggleReminderOptions = function() {
+      var cb  = document.getElementById('remindersEnabled');
+      var opts= document.getElementById('reminderOptions');
+      var bg  = document.getElementById('reminderToggleBg');
+      var thumb=document.getElementById('reminderToggleThumb');
+      if (!opts) return;
+      if (cb.checked) {
+        opts.style.display = 'block';
+        bg.style.background = '#2563eb';
+        thumb.style.left = '22px';
+      } else {
+        opts.style.display = 'none';
+        bg.style.background = '#cbd5e1';
+        thumb.style.left = '2px';
+      }
+    };
+
+    window.saveReminderSettings = function() {
+      var enabled = document.getElementById('remindersEnabled').checked;
+      var sms     = document.getElementById('smsEnabled').checked;
+      var wa      = document.getElementById('waEnabled').checked;
+      var phone   = document.getElementById('reminderPhone').value.trim();
+      var status  = document.getElementById('reminderSaveStatus');
+
+      var times = [];
+      document.querySelectorAll('.time-check:checked').forEach(function(el) {
+        times.push(el.value);
+      });
+
+      if (enabled && !sms && !wa) {
+        alert('Please select at least one channel: SMS or WhatsApp');
+        return;
+      }
+      if (enabled && !phone) {
+        alert('Please enter your phone number to receive reminders');
+        return;
+      }
+
+      fetch('/api/save_reminder_settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          reminders_enabled: enabled,
+          sms_enabled:       sms,
+          whatsapp_enabled:  wa,
+          phone:             phone,
+          reminder_times:    times
+        })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (status) {
+          status.style.display = 'block';
+          if (data.success) {
+            status.style.color = '#10b981';
+            status.innerHTML = '<i class="fas fa-check-circle"></i> Reminder settings saved!';
+          } else {
+            status.style.color = '#ef4444';
+            status.textContent = data.error || 'Could not save';
+          }
+          setTimeout(function() { status.style.display = 'none'; }, 3000);
+        }
+      })
+      .catch(function() {
+        alert('Network error. Try again.');
+      });
+    };
+
+    // Load saved reminder settings when settings tab opens
+    window._loadReminderSettings = function() {
+      fetch('/api/reminder_settings')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.error) return;
+          var cb = document.getElementById('remindersEnabled');
+          if (cb) {
+            cb.checked = data.reminders_enabled;
+            window.toggleReminderOptions();
+          }
+          var sms = document.getElementById('smsEnabled');
+          if (sms) sms.checked = data.sms_enabled;
+          var wa = document.getElementById('waEnabled');
+          if (wa)  wa.checked = data.whatsapp_enabled;
+          var ph = document.getElementById('reminderPhone');
+          if (ph && data.phone) ph.value = data.phone;
+          // Set time checkboxes
+          document.querySelectorAll('.time-check').forEach(function(el) {
+            el.checked = (data.reminder_times || []).indexOf(el.value) >= 0;
+          });
+        })
+        .catch(function() {});
+    };
+
+    // Hook into nav to load when settings is opened
+    document.querySelectorAll('.nav-link[data-view]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        if (btn.getAttribute('data-view') === 'settings') {
+          setTimeout(window._loadReminderSettings, 100);
+        }
+      });
+    });
+
+    // ── REFILL HANDLER ──
+    window.doRefill = function(el) { el.innerHTML = '<i class="fas fa-check"></i> Requested!'; el.style.color = '#10b981'; el.style.pointerEvents = 'none'; };
+
+    // ── SAVE SETTINGS ──
+    var saveBtn = document.getElementById('saveSettingsBtn');
+    if (saveBtn) saveBtn.addEventListener('click', function() {
+      Object.keys(editSections).forEach(function(s){ if(editSections[s]) toggleSectionEdit(s); });
+      showSuccessModal();
+    });
+
+    // ── LIVE DATE ──
+    var liveDateEl = document.getElementById('liveDatePatient');
+    if (liveDateEl) liveDateEl.textContent = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+
+    // ── ADHERENCE COUNTS ──
+    var aTaken={{ taken }}, aMissed={{ missed }}, aSkipped={{ skipped }};
+    var tEl=document.querySelector('.adherence-card:nth-child(1) .adherence-value');
+    var mEl=document.querySelector('.adherence-card:nth-child(2) .adherence-value');
+    var sEl=document.querySelector('.adherence-card:nth-child(3) .adherence-value');
+    if(tEl) tEl.textContent=aTaken; if(mEl) mEl.textContent=aMissed; if(sEl) sEl.textContent=aSkipped;
+    var li=document.querySelectorAll('.legend-item');
+    if(li[0]&&li[0].childNodes[1]) li[0].childNodes[1].textContent=' Taken ('+aTaken+')';
+    if(li[1]&&li[1].childNodes[1]) li[1].childNodes[1].textContent=' Missed ('+aMissed+')';
+    if(li[2]&&li[2].childNodes[1]) li[2].childNodes[1].textContent=' Skipped ('+aSkipped+')';
+
+    // ── INIT ──
+    setActiveView('dashboard');
+
+    // ── MEDICAL RECORDS INIT (patient) ──
+    // Attach to each nav link that leads to medical-records
+    document.querySelectorAll('.nav-link[data-view]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        if (btn.getAttribute('data-view') === 'medical-records' && !window._mrPatientInited) {
+          window._mrPatientInited = true;
+          setTimeout(function() {
+            var patId = '{{ patient.patient_id }}';
+            if (typeof MedicalRecords === 'undefined') return;
+            MedicalRecords.injectModal();
+            var uploadArea = document.getElementById('patientMrUploadArea');
+            if (uploadArea && !uploadArea.innerHTML.trim()) {
+              uploadArea.innerHTML = MedicalRecords.getUploadFormHtml(patId, '');
+            }
+            MedicalRecords.loadRecords(patId, 'patientMrList', true);
+          }, 100);
+        }
+      });
+    });
+
+    // ── DOCTOR'S NOTES ──────────────────────────────
+    function loadDoctorNotes() {
+      var container = document.getElementById('doctors-notes-list');
+      if (!container) return;
+      container.innerHTML = '<p style="color:#94a3b8;font-size:.9rem;">Loading...</p>';
+      fetch('/api/my_clinical_notes')
+        .then(function(r){ return r.json(); })
+        .then(function(data) {
+          var notes = data.notes || [];
+          if (!notes.length) {
+            container.innerHTML =
+              '<div style="text-align:center;padding:3rem 1rem;">'
+              + '<i class="fas fa-notes-medical" style="font-size:3rem;color:#cbd5e1;margin-bottom:1rem;display:block;"></i>'
+              + '<p style="color:#94a3b8;font-size:.95rem;">No notes from your doctor yet.</p>'
+              + '</div>';
+            return;
+          }
+          var html = '';
+          notes.forEach(function(n) {
+            var date = n.date || (n.created_at ? n.created_at.slice(0,10) : '');
+            var time = n.created_at ? n.created_at.slice(11,16) : '';
+            html +=
+              '<div style="background:#fff;border:1px solid #e2e8f0;border-left:4px solid #2563eb;'
+              + 'border-radius:12px;padding:1.2rem 1.4rem;margin-bottom:1rem;box-shadow:0 2px 8px rgba(0,0,0,.05);">'
+              + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;">'
+              +   '<span style="display:flex;align-items:center;gap:.5rem;">'
+              +     '<i class="fas fa-user-md" style="color:#2563eb;font-size:.95rem;"></i>'
+              +     '<strong style="color:#1e293b;font-size:.95rem;">Dr. ' + (n.doctor_name || 'Your Doctor') + '</strong>'
+              +   '</span>'
+              +   '<span style="font-size:.8rem;color:#94a3b8;background:#f1f5f9;padding:.25rem .7rem;border-radius:20px;">'
+              +     '<i class="fas fa-calendar-alt" style="margin-right:.3rem;"></i>' + date + (time ? ' &nbsp;·&nbsp; ' + time : '')
+              +   '</span>'
+              + '</div>'
+              + '<p style="margin:0;color:#334155;font-size:.92rem;line-height:1.7;white-space:pre-wrap;">' + n.note + '</p>'
+              + '</div>';
+          });
+          container.innerHTML = html;
+        })
+        .catch(function() {
+          container.innerHTML = '<p style="color:#ef4444;font-size:.9rem;">Could not load notes. Please try again.</p>';
+        });
+    }
+
+  </script>
+  <script src="/static/js/medical_records_ui.js"></script>
+</body>

@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Forgot Password · White & Blue</title>
+  <!-- Font Awesome 6 (free) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: linear-gradient(145deg, #e9f2fc 0%, #ffffff 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      margin: 0;
+      position: relative;
+    }
+
+    /* ----- TOP BAR with logo (left) and logout (right) ----- */
+    .top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 3rem;
+      background: transparent;
+      z-index: 10;
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.6);
+      backdrop-filter: blur(4px);
+      padding: 0.5rem 1.5rem;
+      border-radius: 60px;
+      box-shadow: 0 4px 12px rgba(0,40,80,0.1);
+      border: 1px solid white;
+    }
+
+    /* Your actual logo image */
+    .logo-area img {
+      height: 40px;
+      width: auto;
+      display: block;
+    }
+
+    .logo-area span {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #0b3d5c;
+    }
+
+    .logout-btn {
+      background: white;
+      border: 1px solid #c5dfff;
+      color: #1d6eb0;
+      padding: 0.6rem 1.8rem;
+      border-radius: 40px;
+      font-size: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      box-shadow: 0 4px 10px rgba(0,60,130,0.1);
+    }
+
+    .logout-btn:hover {
+      background: #e3f0ff;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(0,90,180,0.15);
+    }
+
+    .logout-btn i {
+      font-size: 1rem;
+    }
+
+    /* elegant card container */
+    .form-card {
+      max-width: 550px;
+      width: 100%;
+      background-color: #ffffff;
+      border-radius: 32px;
+      box-shadow: 0 20px 40px -10px rgba(0, 79, 158, 0.25), 0 8px 20px -6px rgba(0, 53, 102, 0.15);
+      overflow: hidden;
+      backdrop-filter: blur(2px);
+      transition: transform 0.25s ease;
+      margin-top: 80px; /* space for fixed top bar */
+    }
+
+    .form-card:hover {
+      transform: scale(1.01);
+    }
+
+    /* header with deep blue wave */
+    .form-header {
+      background: linear-gradient(135deg, #0a3e6d, #1a5f9e);
+      padding: 1.8rem 2.5rem;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 6px solid #7ab7ef;
+    }
+
+    .form-header i {
+      font-size: 2.2rem;
+      background: rgba(255,255,255,0.15);
+      padding: 12px;
+      border-radius: 50%;
+      box-shadow: 0 6px 12px rgba(0,20,50,0.2);
+    }
+
+    .form-header h2 {
+      font-weight: 600;
+      font-size: 1.9rem;
+      letter-spacing: -0.02em;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .form-header p {
+      font-size: 0.9rem;
+      opacity: 0.85;
+      margin-top: 4px;
+      font-weight: 400;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* main form area */
+    .form-body {
+      padding: 2.5rem 2.8rem;
+      background: #ffffff;
+    }
+
+    /* section styling */
+    .form-section {
+      margin-bottom: 2rem;
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #0b3b5c;
+      margin-bottom: 1rem;
+    }
+
+    .section-title i {
+      color: #2a7fcf;
+      background: #e2efff;
+      padding: 8px;
+      border-radius: 12px;
+      font-size: 1rem;
+    }
+
+    /* description text */
+    .description-text {
+      color: #3f6b95;
+      font-size: 0.95rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+      padding: 0 0.2rem;
+    }
+
+    /* field styling */
+    .field-group {
+      margin-bottom: 1.5rem;
+    }
+
+    label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #1e4f7a;
+      margin-bottom: 5px;
+    }
+
+    label i {
+      font-size: 0.9rem;
+      color: #3a8cd0;
+      width: 18px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      background-color: #f8fcff;
+      border: 1.5px solid #cde0f0;
+      border-radius: 18px;
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+      outline: none;
+      color: #0b2f4a;
+    }
+
+    input:focus, select:focus {
+      border-color: #1e81d9;
+      background-color: #ffffff;
+      box-shadow: 0 4px 12px rgba(28, 110, 194, 0.15);
+    }
+
+    /* role selector tabs */
+    .role-tabs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.8rem;
+      margin-bottom: 2rem;
+      background: #ecf5fd;
+      padding: 0.5rem;
+      border-radius: 60px;
+      border: 1px solid #c5dfff;
+    }
+
+    .role-btn {
+      padding: 0.8rem 0.5rem;
+      border: none;
+      background: transparent;
+      border-radius: 50px;
+      font-weight: 600;
+      color: #195d93;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+      font-size: 0.95rem;
+    }
+
+    .role-btn i {
+      font-size: 1rem;
+      color: #397eb0;
+    }
+
+    .role-btn.active {
+      background: white;
+      box-shadow: 0 6px 14px -6px #2680ce80;
+      color: #0b4a7c;
+      border: 1px solid #b5d8ff;
+    }
+
+    .role-btn.active i {
+      color: #1d70b8;
+    }
+
+    /* input icon */
+    .input-icon {
+      position: relative;
+    }
+
+    .input-icon i {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #749fc3;
+      font-size: 1rem;
+    }
+
+    .input-icon input, .input-icon select {
+      padding-left: 40px;
+    }
+
+    /* small hint text */
+    .input-hint {
+      font-size: 0.75rem;
+      color: #5982a3;
+      margin-top: 5px;
+      margin-left: 12px;
+    }
+
+    /* submit button */
+    .submit-btn {
+      margin-top: 1rem;
+      width: 100%;
+      background: linear-gradient(115deg, #0f4880, #2173b8);
+      border: none;
+      padding: 1.1rem 1.5rem;
+      border-radius: 50px;
+      color: white;
+      font-size: 1.2rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      cursor: pointer;
+      box-shadow: 0 8px 20px -5px #1b6ecf80;
+      transition: all 0.2s;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .submit-btn i {
+      font-size: 1.3rem;
+    }
+
+    .submit-btn:hover {
+      background: linear-gradient(115deg, #1b5690, #2c86d1);
+      box-shadow: 0 12px 28px -6px #0e5090;
+      transform: translateY(-3px);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    /* secondary links */
+    .back-link {
+      text-align: center;
+      margin-top: 1.8rem;
+    }
+
+    .back-link a {
+      color: #1e6eb0;
+      text-decoration: none;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.95rem;
+      border-bottom: 1px dashed #9ec3e5;
+      padding-bottom: 2px;
+    }
+
+    .back-link a:hover {
+      color: #0a4f86;
+      border-bottom-style: solid;
+    }
+
+    /* alert message */
+    .alert-message {
+      background-color: #fff3e0;
+      border-left: 5px solid #ffb74d;
+      padding: 0.8rem 1.2rem;
+      border-radius: 14px;
+      color: #854d0e;
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+      display: none;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .alert-message.show {
+      display: flex;
+    }
+
+    .alert-message.success {
+      background-color: #dff0d8;
+      border-left-color: #2e7d32;
+      color: #1e4f1e;
+    }
+
+    /* Success Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal.active {
+      display: flex;
+    }
+    .modal-content {
+      background: white;
+      border-radius: 1rem;
+      padding: 2rem;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+    .modal-header i {
+      font-size: 3rem;
+      color: #10b981;
+    }
+    .modal-body {
+      margin-bottom: 1.5rem;
+    }
+    .modal-body h3 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-dark);
+    }
+    .modal-body p {
+      color: #64748b;
+    }
+
+    /* responsive */
+    @media (max-width: 500px) {
+      .form-body {
+        padding: 1.8rem;
+      }
+      .form-header h2 {
+        font-size: 1.5rem;
+      }
+      .role-tabs {
+        grid-template-columns: 1fr;
+        gap: 0.5rem;
+        border-radius: 30px;
+      }
+      .top-bar {
+        padding: 1rem 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR with logo (left) and logout (right) - completely outside the card -->
+  <div class="top-bar">
+    <div class="logo-area">
+      <!-- Your actual logo image - replace the src with your logo path -->
+      <img src="/static/images/logo.jpg" alt="MedCare Logo">
+      <span>Wellsync</span>
+    </div>
+    <a href="{{ url_for('index') }}" class="logout-btn">
+      <i class="fas fa-sign-out-alt"></i> MAIN
+    </a>
+  </div>
+
+  <!-- Main Forgot Password Card -->
+  <div class="form-card">
+    <div class="form-header">
+      <i class="fas fa-key"></i>
+      <div>
+        <h2>Forgot Password</h2>
+        <p>Reset your password</p>
+      </div>
+    </div>
+
+    <div class="form-body">
+      <!-- Alert message -->
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+          <div class="alert-message show {{ 'success' if category == 'success' else '' }}" style="display:flex;">
+            <i class="fas fa-{{ 'check-circle' if category == 'success' else 'circle-exclamation' }}" style="font-size:1.4rem;"></i>
+            <span>{{ message }}</span>
+          </div>
+        {% endfor %}
+      {% endwith %}
+
+      <div id="liveAlert" class="alert-message">
+        <i class="fas fa-circle-exclamation" style="font-size: 1.4rem;"></i>
+        <span id="alertText">Please check your email</span>
+      </div>
+
+      <!-- Role selector tabs -->
+      <div class="role-tabs" id="roleTabs">
+        <button type="button" class="role-btn active" data-role="patient"><i class="fas fa-notes-medical"></i> Patient</button>
+        <button type="button" class="role-btn" data-role="doctor"><i class="fas fa-user-md"></i> Doctor</button>
+        <button type="button" class="role-btn" data-role="agent"><i class="fas fa-user-tie"></i> Agent</button>
+      </div>
+
+      <form id="forgotForm" method="POST" action="{{ url_for('auth.forgot_password') }}">
+        <!-- Description -->
+        <div class="description-text">
+          Enter your registered email address or user ID. We'll send you a link to reset your password.
+        </div>
+
+        <!-- Email / ID field -->
+        <div class="field-group">
+          <label><i class="fas fa-envelope"></i> Email or User ID</label>
+          <div class="input-icon">
+            <i class="fas fa-user"></i>
+            <input type="text" id="userIdentifier" name="userIdentifier" placeholder="e.g., patient@example.com or PT1234" required>
+          </div>
+          <div class="input-hint" id="hintText">
+            <i class="fas fa-info-circle"></i> Patient: 6 chars, Doctor: 4 chars, Agent: 5 chars or email
+          </div>
+        </div>
+
+        <!-- Submit button -->
+        <button type="submit" class="submit-btn">
+          <i class="fas fa-paper-plane"></i> Send Reset Link
+        </button>
+
+        <!-- Back to login link -->
+        <div class="back-link">
+          <a href="{{ url_for('auth.login') }}"><i class="fas fa-arrow-left"></i> Back to Login</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div id="successModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <i class="fas fa-envelope"></i>
+      </div>
+      <div class="modal-body">
+        <h3>Reset Link Sent!</h3>
+        <p>A password reset link has been sent to your email. Redirecting to login...</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      // Role switching logic
+      const roleButtons = document.querySelectorAll('.role-btn');
+      const alertBox = document.getElementById('liveAlert');
+      const alertSpan = document.getElementById('alertText');
+      const userInput = document.getElementById('userIdentifier');
+      const hintSpan = document.getElementById('hintText');
+      const form = document.getElementById('forgotForm');
+
+      let currentRole = 'patient';
+
+      // Update active tab and hint
+      function setActiveRole(role) {
+        currentRole = role;
+        
+        roleButtons.forEach(btn => {
+          const btnRole = btn.getAttribute('data-role');
+          if (btnRole === role) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        });
+
+        // Update hint text based on role (agent now 5 chars)
+        if (role === 'patient') {
+          hintSpan.innerHTML = '<i class="fas fa-info-circle"></i> Patient: exactly 6 characters or email';
+          userInput.placeholder = "e.g., patient@example.com or PT1234";
+        } else if (role === 'doctor') {
+          hintSpan.innerHTML = '<i class="fas fa-info-circle"></i> Doctor: exactly 4 characters or email';
+          userInput.placeholder = "e.g., doctor@hospital.com or DR01";
+        } else if (role === 'agent') {
+          hintSpan.innerHTML = '<i class="fas fa-info-circle"></i> Agent: exactly 5 alphanumeric characters or email';
+          userInput.placeholder = "e.g., agent@example.com or A7X92";
+        }
+      }
+
+      // Add click listeners
+      roleButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const role = btn.getAttribute('data-role');
+          setActiveRole(role);
+          alertBox.classList.remove('show', 'success');
+        });
+      });
+
+      // Initial set
+      setActiveRole('patient');
+
+      // Show success modal and redirect
+      function showSuccessAndRedirect() {
+        const modal = document.getElementById('successModal');
+        modal.classList.add('active');
+        
+        // Redirect to login page after 2 seconds
+        setTimeout(() => {
+          window.location.href = "{{ url_for('auth.login') }}";
+        }, 2000);
+      }
+
+      // Form validation
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const userValue = userInput.value.trim();
+
+        if (userValue === '') {
+          alertSpan.innerText = 'Please enter your email or user ID.';
+          alertBox.classList.add('show');
+          alertBox.classList.remove('success');
+          return;
+        }
+
+        // Just ensure it's not empty — Flask will verify the actual ID/email
+
+        // Success - show modal and redirect to login
+        showSuccessAndRedirect();
+      });
+
+      // Hide alert when typing
+      userInput.addEventListener('input', () => {
+        alertBox.classList.remove('show', 'success');
+      });
+    })();
+  </script>
+
+</body>
+</html>

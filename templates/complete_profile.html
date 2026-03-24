@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete Your Profile — WellSync</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1e40af 0%, #2563eb 50%, #3b82f6 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+    .card {
+      background: white;
+      border-radius: 1.5rem;
+      padding: 2.5rem;
+      width: 100%;
+      max-width: 680px;
+      box-shadow: 0 25px 60px rgba(0,0,0,.2);
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .header .icon {
+      width: 72px; height: 72px;
+      background: linear-gradient(135deg,#2563eb,#10b981);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1rem;
+      font-size: 2rem; color: white;
+    }
+    .header h1 { font-size: 1.6rem; color: #1e293b; margin-bottom: .4rem; }
+    .header p  { color: #64748b; font-size: .95rem; }
+
+    .patient-info {
+      background: #eff6ff;
+      border-radius: .75rem;
+      padding: 1rem 1.2rem;
+      margin-bottom: 1.5rem;
+      border-left: 4px solid #2563eb;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .patient-info .avatar {
+      width: 44px; height: 44px;
+      background: #2563eb;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-weight: 700; font-size: 1.1rem; flex-shrink: 0;
+    }
+    .patient-info h3 { font-size: 1rem; color: #1e293b; }
+    .patient-info p  { font-size: .83rem; color: #64748b; margin-top: .1rem; }
+
+    .steps {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      justify-content: center;
+    }
+    .step {
+      display: flex; align-items: center; gap: .4rem;
+      font-size: .82rem; font-weight: 600; color: #94a3b8;
+    }
+    .step.active { color: #2563eb; }
+    .step.done   { color: #10b981; }
+    .step-num {
+      width: 24px; height: 24px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      background: #e2e8f0; font-size: .75rem;
+    }
+    .step.active .step-num { background: #2563eb; color: white; }
+    .step.done   .step-num { background: #10b981; color: white; }
+
+    .section-title {
+      font-size: .95rem; font-weight: 700; color: #1e40af;
+      margin: 1.2rem 0 .8rem;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .field { display: flex; flex-direction: column; gap: .3rem; }
+    .field.full { grid-column: span 2; }
+    label { font-size: .83rem; font-weight: 600; color: #475569; }
+    label .req { color: #ef4444; margin-left: .2rem; }
+    input, select, textarea {
+      padding: .65rem .9rem;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: .92rem;
+      font-family: inherit;
+      transition: border .2s, box-shadow .2s;
+      width: 100%;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,.1);
+    }
+    input.valid   { border-color: #10b981; background: #f0fdf4; }
+    input.invalid, select.invalid { border-color: #ef4444; background: #fff5f5; }
+    .field-msg { font-size: .75rem; min-height: .9rem; }
+    .field-msg.ok    { color: #10b981; }
+    .field-msg.error { color: #ef4444; }
+    textarea { resize: vertical; min-height: 70px; }
+
+    .radio-row {
+      display: flex; gap: 1rem; align-items: center; margin-top: .3rem;
+    }
+    .radio-row label {
+      display: flex; align-items: center; gap: .4rem;
+      font-weight: 400; font-size: .9rem; cursor: pointer;
+    }
+    .conditional {
+      margin-top: .5rem; display: none;
+    }
+
+    .submit-btn {
+      width: 100%; margin-top: 1.5rem;
+      padding: 1rem;
+      background: linear-gradient(135deg, #2563eb, #10b981);
+      color: white; border: none; border-radius: 10px;
+      font-size: 1.05rem; font-weight: 700; cursor: pointer;
+      transition: opacity .2s, transform .1s;
+    }
+    .submit-btn:hover  { opacity: .9; }
+    .submit-btn:active { transform: scale(.98); }
+
+    .error-box {
+      background: #fff5f5; border: 1px solid #fecaca;
+      border-radius: .75rem; padding: .8rem 1rem;
+      margin-bottom: 1rem; color: #dc2626;
+      font-size: .9rem; display: none;
+    }
+    .error-box.show { display: flex; align-items: center; gap: .5rem; }
+
+    @keyframes shake {
+      0%,100%{transform:translateX(0)}
+      20%,60%{transform:translateX(-6px)}
+      40%,80%{transform:translateX(6px)}
+    }
+    .shake { animation: shake .4s ease; }
+
+    @media (max-width: 540px) {
+      .grid { grid-template-columns: 1fr; }
+      .field.full { grid-column: span 1; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="header">
+    <div class="icon"><i class="fas fa-user-edit"></i></div>
+    <h1>Complete Your Profile</h1>
+    <p>Your prescription is ready. Please fill in your details to access your dashboard.</p>
+  </div>
+
+  <!-- Patient info banner -->
+  <div class="patient-info">
+    <div class="avatar">{{ patient.fullname[:2].upper() if patient.fullname else 'PT' }}</div>
+    <div>
+      <h3>{{ patient.fullname }}</h3>
+      <p><i class="fas fa-phone" style="margin-right:.3rem;"></i>{{ patient.phone }}
+         &nbsp;·&nbsp;
+         <i class="fas fa-id-card" style="margin-right:.3rem;"></i>{{ patient.patient_id }}
+      </p>
+    </div>
+  </div>
+
+  <!-- Steps indicator -->
+  <div class="steps">
+    <div class="step done">
+      <div class="step-num"><i class="fas fa-check" style="font-size:.6rem;"></i></div>
+      Account Created
+    </div>
+    <div style="color:#e2e8f0;align-self:center;">──</div>
+    <div class="step active">
+      <div class="step-num">2</div>
+      Complete Profile
+    </div>
+    <div style="color:#e2e8f0;align-self:center;">──</div>
+    <div class="step">
+      <div class="step-num">3</div>
+      Dashboard Ready
+    </div>
+  </div>
+
+  <!-- Error box -->
+  <div class="error-box" id="errorBox">
+    <i class="fas fa-exclamation-circle"></i>
+    <span id="errorSpan"></span>
+  </div>
+
+  <form method="POST" action="/complete_profile" id="profileForm">
+
+    <!-- BASIC INFO -->
+    <div class="section-title">
+      <i class="fas fa-user" style="color:#2563eb;"></i> Basic Information
+    </div>
+    <div class="grid">
+      <div class="field">
+        <label>Gender <span class="req">*</span></label>
+        <select name="gender" id="gender" required>
+          <option value="">Select gender</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+          <option value="Other">Other</option>
+          <option value="Prefer not to say">Prefer not to say</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Blood Group <span class="req">*</span></label>
+        <select name="bloodgroup" id="bloodgroup" required>
+          <option value="">Select blood group</option>
+          <option>A+</option><option>A-</option>
+          <option>B+</option><option>B-</option>
+          <option>AB+</option><option>AB-</option>
+          <option>O+</option><option>O-</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Date of Birth <span class="req">*</span></label>
+        <input type="date" name="dob" id="dob" required>
+        <span class="field-msg" id="msg-dob"></span>
+      </div>
+      <div class="field">
+        <label>Email Address</label>
+        <input type="email" name="email" id="email" placeholder="patient@example.com">
+        <span class="field-msg" id="msg-email"></span>
+      </div>
+      <div class="field full">
+        <label>Full Address <span class="req">*</span></label>
+        <textarea name="address" id="address" placeholder="Street, City, State, PIN code" required></textarea>
+      </div>
+    </div>
+
+    <!-- MEDICAL INFO -->
+    <div class="section-title">
+      <i class="fas fa-notes-medical" style="color:#10b981;"></i> Medical Information
+    </div>
+
+    <!-- Chronic conditions -->
+    <div class="field" style="margin-bottom:.8rem;">
+      <label>Do you have any chronic conditions?</label>
+      <div class="radio-row">
+        <label><input type="radio" name="conditionsOption" value="Yes" onchange="toggle('condDetails','yes')"> Yes</label>
+        <label><input type="radio" name="conditionsOption" value="No"  onchange="toggle('condDetails','no')" checked> No</label>
+      </div>
+      <div class="conditional" id="condDetails">
+        <textarea name="conditionsDesc" placeholder="e.g. Diabetes Type 2, Hypertension..."></textarea>
+      </div>
+    </div>
+
+    <!-- Allergies -->
+    <div class="field" style="margin-bottom:.8rem;">
+      <label>Do you have any allergies?</label>
+      <div class="radio-row">
+        <label><input type="radio" name="allergiesOption" value="Yes" onchange="toggle('allergyDetails','yes')"> Yes</label>
+        <label><input type="radio" name="allergiesOption" value="No"  onchange="toggle('allergyDetails','no')" checked> No</label>
+      </div>
+      <div class="conditional" id="allergyDetails">
+        <textarea name="allergiesDesc" placeholder="e.g. Penicillin, Peanuts..."></textarea>
+      </div>
+    </div>
+
+    <!-- Current medications -->
+    <div class="field" style="margin-bottom:.8rem;">
+      <label>Are you currently on any other medications?</label>
+      <div class="radio-row">
+        <label><input type="radio" name="medicationsOption" value="Yes" onchange="toggle('medDetails','yes')"> Yes</label>
+        <label><input type="radio" name="medicationsOption" value="No"  onchange="toggle('medDetails','no')" checked> No</label>
+      </div>
+      <div class="conditional" id="medDetails">
+        <textarea name="medicationsDesc" placeholder="List medications and dosages..."></textarea>
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn" id="submitBtn">
+      <i class="fas fa-check-circle"></i> Save & Go to Dashboard
+    </button>
+  </form>
+</div>
+
+<script>
+  function toggle(id, state) {
+    var el = document.getElementById(id);
+    if (el) el.style.display = state === 'yes' ? 'block' : 'none';
+  }
+
+  // Real-time email
+  document.getElementById('email').addEventListener('input', function() {
+    var ok = !this.value || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.value);
+    this.classList.toggle('valid',   ok && this.value.length > 0);
+    this.classList.toggle('invalid', !ok && this.value.length > 0);
+    var msg = document.getElementById('msg-email');
+    if (msg) msg.textContent = !this.value ? '' : ok ? '✓ Valid email' : 'Enter a valid email';
+    if (msg) msg.className   = 'field-msg ' + (!this.value ? '' : ok ? 'ok' : 'error');
+  });
+
+  // Real-time DOB — must be in the past and age > 0
+  document.getElementById('dob').addEventListener('change', function() {
+    var d = new Date(this.value);
+    var now = new Date();
+    var ok = d < now && this.value !== '';
+    this.classList.toggle('valid',   ok);
+    this.classList.toggle('invalid', !ok && this.value !== '');
+    var msg = document.getElementById('msg-dob');
+    var age = ok ? Math.floor((now - d) / (365.25*24*3600*1000)) : 0;
+    if (msg) msg.textContent = ok ? '✓ Age: ' + age + ' years' : (!this.value ? '' : 'Invalid date of birth');
+    if (msg) msg.className   = 'field-msg ' + (ok ? 'ok' : 'error');
+  });
+
+  // Submit validation
+  document.getElementById('profileForm').addEventListener('submit', function(e) {
+    var errBox  = document.getElementById('errorBox');
+    var errSpan = document.getElementById('errorSpan');
+    var errors  = [];
+    var first   = null;
+
+    function chk(id, cond, msg) {
+      var el = document.getElementById(id);
+      if (!cond) {
+        errors.push(msg);
+        if (el) { el.classList.add('invalid'); el.classList.remove('valid'); }
+        if (!first) first = el;
+      }
+    }
+
+    chk('gender',    document.getElementById('gender').value !== '',    'Please select your gender.');
+    chk('bloodgroup',document.getElementById('bloodgroup').value !== '', 'Please select your blood group.');
+    chk('dob',       document.getElementById('dob').value !== '',        'Please enter your date of birth.');
+    chk('address',   document.getElementById('address').value.trim().length >= 5, 'Please enter your full address.');
+
+    var email = document.getElementById('email').value.trim();
+    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      chk('email', false, 'Please enter a valid email address.');
+    }
+
+    if (errors.length > 0) {
+      e.preventDefault();
+      errSpan.textContent = errors[0];
+      errBox.classList.add('show');
+      if (first) first.scrollIntoView({behavior:'smooth', block:'center'});
+      var btn = document.getElementById('submitBtn');
+      btn.classList.add('shake');
+      setTimeout(function(){ btn.classList.remove('shake'); }, 400);
+      return;
+    }
+    errBox.classList.remove('show');
+    document.getElementById('submitBtn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+    document.getElementById('submitBtn').disabled = true;
+  });
+</script>
+</body>
+</html>
