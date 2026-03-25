@@ -506,7 +506,7 @@
 
     <!-- login form (single form, role determines action) -->
     <form id="loginForm" method="POST" action="{{ url_for('auth.login') }}">
-      <input type="hidden" name="role" id="selectedRole" value="agent">
+      <input type="hidden" name="role" id="selectedRole" value="{{ request.form.get('role', 'agent') }}">
       <!-- dynamic action set by js, default to agent -->
       <label for="userId"><i class="fas fa-id-badge"></i> User ID </label>
       <div class="input-icon">
@@ -768,9 +768,9 @@
   }
 
   // ── INIT ──
-  setActiveRole('agent');
-
-  // nothing needed here
+  // Remember the role that was submitted (e.g. after a failed login)
+  var initialRole = document.getElementById('selectedRole').value || 'agent';
+  setActiveRole(initialRole);
 
 })();
 </script>
