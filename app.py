@@ -1180,20 +1180,18 @@ def get_clinical_notes(patient_id):
 
 
 # ─────────────────────────────────────────────
-# API: GET MY CLINICAL NOTES (patient)
+# API: FIRE REMINDER NOW (for testing)
+# Visit: /api/fire_reminder_now?slot=Morning
 # ─────────────────────────────────────────────
-@app.route("/api/my_clinical_notes")
-def my_clinical_notes():
-    if session.get("role") != "patient":
-        return jsonify({"error": "Unauthorized"}), 403
-
-    patient_id = session["user_id"]
-    notes = list(
-        db["clinical_notes"]
-        .find({"patient_id": patient_id}, {"_id": 0})
-        .sort("created_at", -1)
-    )
-    return jsonify({"notes": notes})
+@app.route("/api/fire_reminder_now")
+def fire_reminder_now():
+    slot = request.args.get("slot", "Morning")
+    if slot not in ("Morning", "Afternoon", "Evening", "Night"):
+        return jsonify({"error": "slot must be Morning/Afternoon/Evening/Night"}), 400
+    from reminders import send_reminders_for_slot
+    import threading
+    threading.Thread(target=send_reminders_for_slot, args=(slot,), daemon=True).start()
+    return jsonify({"success": True, "message": f"Firing {slot} reminders now — check terminal!"})
 
 
 # ─────────────────────────────────────────────
@@ -1202,6 +1200,70 @@ def my_clinical_notes():
 @app.route("/test-db")
 def test_db():
     return "MongoDB Connected Successfully!"
+
+
+# ─────────────────────────────────────────────
+# API: REMINDER SCHEDULER STATUS (agent/doctor)
+# ─────────────────────────────────────────────
+@app.route("/api/reminder_scheduler_status")
+def reminder_scheduler_status():
+    if session.get("role") not in ("agent", "doctor"):
+        return jsonify({"error": "Unauthorized"}), 403
+    jobs = _schedule.get_jobs()
+    return jsonify({
+        "running": True,
+        "jobs": [str(j) for j in jobs],
+        "next_runs": [str(j.next_run) for j in jobs]
+    })
+
+
+# ─────────────────────────────────────────────
+# BACKGROUND REMINDER SCHEDULER
+# Starts automatically when Flask starts.
+# No need to run reminders.py separately ever.
+# ─────────────────────────────────────────────
+import threading
+import time as _time
+import schedule as _schedule
+
+def _run_reminder_scheduler():
+    """Runs in a background thread — sends reminders automatically."""
+    from reminders import send_reminders_for_slot
+    from datetime import datetime as _dt
+
+    _schedule.every().day.at("08:00").do(send_reminders_for_slot, "Morning")
+    _schedule.every().day.at("13:00").do(send_reminders_for_slot, "Afternoon")
+    _schedule.every().day.at("18:00").do(send_reminders_for_slot, "Evening")
+    _schedule.every().day.at("21:00").do(send_reminders_for_slot, "Night")
+
+    print("✅ WellSync Reminder Scheduler running in background")
+    print("   08:00 Morning | 13:00 Afternoon | 18:00 Evening | 21:00 Night")
+
+    # Fire immediately for current time slot on startup
+    _now_hour = _dt.now().hour
+    if 6 <= _now_hour < 12:
+        print("   ⚡ Firing Morning slot immediately on startup...")
+        send_reminders_for_slot("Morning")
+    elif 12 <= _now_hour < 16:
+        print("   ⚡ Firing Afternoon slot immediately on startup...")
+        send_reminders_for_slot("Afternoon")
+    elif 16 <= _now_hour < 20:
+        print("   ⚡ Firing Evening slot immediately on startup...")
+        send_reminders_for_slot("Evening")
+    else:
+        print("   ⚡ Firing Night slot immediately on startup...")
+        send_reminders_for_slot("Night")
+
+    while True:
+        _schedule.run_pending()
+        _time.sleep(30)
+
+
+# Start only once — not in Flask reloader child process
+import os as _os
+if not _os.environ.get("WERKZEUG_RUN_MAIN"):
+    _t = threading.Thread(target=_run_reminder_scheduler, daemon=True)
+    _t.start()
 
 
 if __name__ == "__main__":
