@@ -21,11 +21,13 @@ from dotenv import load_dotenv
 from pymongo import MongoClient
 from twilio.rest import Client
 
-load_dotenv()
 
 # ── MongoDB ──────────────────────────────────────
-MONGO_URL     = os.getenv("MONGO_URI")
-mongo_client   = MongoClient(MONGO_URI)
+MONGO_URI = os.getenv("MONGO_URI")
+
+if not MONGO_URI:
+    raise ValueError("❌ MONGO_URI is not set!")
+from config import db, patients, prescriptions, reminder_logs, dose_responses, adherence_logs
 db             = mongo_client["wellsync_db"]
 patients       = db["patients"]
 prescriptions  = db["prescriptions"]
@@ -453,3 +455,4 @@ def handle_reply(from_number, body, channel="whatsapp"):
             f"Try to stay on schedule for better recovery.\n"
             f"— WellSync Health System"
         )
+   
