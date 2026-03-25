@@ -1261,10 +1261,7 @@ def _run_reminder_scheduler():
 
 # Start only once — not in Flask reloader child process
 import os as _os
-if not _os.environ.get("WERKZEUG_RUN_MAIN"):
+if __name__ == "__main__":
     _t = threading.Thread(target=_run_reminder_scheduler, daemon=True)
     _t.start()
-
-
-if __name__ == "__main__":
     app.run(debug=True)
