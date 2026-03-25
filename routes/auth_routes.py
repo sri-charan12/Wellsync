@@ -140,12 +140,15 @@ def login():
         if not user:
             return render_template("login.html", error="User not found. Check your ID or phone number.")
 
-        # Password check
+        # ── Password check (handles str, bytes, and MongoDB BSON Binary) ──
         stored_pw = user.get("password")
         if not stored_pw:
             return render_template("login.html", error="Account has no password set. Contact support.")
         if isinstance(stored_pw, str):
             stored_pw = stored_pw.encode("utf-8")
+        elif not isinstance(stored_pw, bytes):
+            stored_pw = bytes(stored_pw)   # ✅ fixes BSON Binary type from MongoDB
+
         if not bcrypt.checkpw(password.encode("utf-8"), stored_pw):
             return render_template("login.html", error="Incorrect password. Please try again.")
 
@@ -157,9 +160,6 @@ def login():
         elif role == "doctor":
             return redirect("/doctor_dashboard")
         elif role == "patient":
-            # If profile not complete, redirect to complete profile page
-            # Only redirect to complete_profile if patient was
-            # created by agent AND hasn't filled profile yet
             if user.get("created_by_agent") and not user.get("profile_complete", False):
                 return redirect("/complete_profile")
             return redirect("/patient_dashboard")
