@@ -24,8 +24,8 @@ from twilio.rest import Client
 load_dotenv()
 
 # ── MongoDB ──────────────────────────────────────
-MONGO_URL     = os.getenv("MONGO_URL")
-mongo_client   = MongoClient(MONGO_URL)
+MONGO_URL     = os.getenv("MONGO_URI")
+mongo_client   = MongoClient(MONGO_URI)
 db             = mongo_client["wellsync_db"]
 patients       = db["patients"]
 prescriptions  = db["prescriptions"]
